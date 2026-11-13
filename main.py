@@ -16,7 +16,6 @@ tam bir büyük veri ve makine öğrenimi boru hattını (pipeline) icra eder:
 """
 
 import os
-import sys
 
 # Matplotlib cache dizinini proje icine yonlendir
 os.environ["MPLCONFIGDIR"] = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".mpl_cache")
@@ -24,25 +23,20 @@ os.makedirs(os.environ["MPLCONFIGDIR"], exist_ok=True)
 
 import argparse
 import logging
-import json
-from typing import Optional
 
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from tabulate import tabulate
 
 from src.data_prep import (
     load_or_generate_credit_card_data,
-    run_eda_and_generate_report,
-    calculate_class_distribution
+    run_eda_and_generate_report
 )
 from src.imbalance import (
     ImbalanceAnalyzer,
     DataLeakageGuard,
     apply_sampling_strategy,
-    get_scale_pos_weight,
-    get_balanced_class_weights
+    get_scale_pos_weight
 )
 from src.spark_features import (
     get_spark_session,

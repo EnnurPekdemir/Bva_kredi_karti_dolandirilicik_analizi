@@ -15,7 +15,6 @@ Bu modül aşağıdaki görevleri yerine getirir:
 """
 
 import os
-import sys
 import shutil
 import logging
 from typing import Tuple, List, Optional, Any
@@ -29,11 +28,11 @@ logger = logging.getLogger("SparkFeatures")
 # PySpark bağımlılıklarını dinamik ve güvenli şekilde kontrol et
 HAS_SPARK = False
 try:
-    from pyspark.sql import SparkSession, Window
-    from pyspark.sql import functions as F
-    from pyspark.sql.types import DoubleType, LongType, IntegerType
-    from pyspark.ml.feature import VectorAssembler, StandardScaler
-    from pyspark.ml import Pipeline
+    from pyspark.sql import SparkSession, Window  # type: ignore
+    from pyspark.sql import functions as F  # type: ignore
+    from pyspark.sql.types import LongType  # type: ignore
+    from pyspark.ml.feature import VectorAssembler, StandardScaler  # type: ignore
+    from pyspark.ml import Pipeline  # type: ignore
     HAS_SPARK = True
 except ImportError:
     HAS_SPARK = False

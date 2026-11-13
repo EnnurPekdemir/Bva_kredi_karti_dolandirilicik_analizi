@@ -19,9 +19,8 @@ Bu modül aşağıdaki görevleri yerine getirir:
 """
 
 import os
-import json
 import logging
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Dict, Any, Tuple, Optional
 
 import numpy as np
 import pandas as pd
@@ -34,8 +33,16 @@ from sklearn.metrics import (
     precision_recall_curve, roc_curve
 )
 from sklearn.ensemble import RandomForestClassifier
-import lightgbm as lgb
-import xgboost as xgb
+
+try:
+    import lightgbm as lgb  # type: ignore
+except ImportError:
+    lgb = None
+
+try:
+    import xgboost as xgb  # type: ignore
+except ImportError:
+    xgb = None
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("Modeling")

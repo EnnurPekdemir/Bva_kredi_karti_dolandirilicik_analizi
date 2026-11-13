@@ -21,16 +21,18 @@ Görevler:
 
 import os
 import time
-import json
 import logging
-from typing import Dict, Any, List, Tuple
+from typing import List
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 
-import lightgbm as lgb
+try:
+    import lightgbm as lgb  # type: ignore
+except ImportError:
+    lgb = None
+
 from sklearn.metrics import average_precision_score, recall_score, precision_score, f1_score, roc_auc_score
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
