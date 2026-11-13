@@ -17,13 +17,19 @@ Bu modül aşağıdaki görevleri yerine getirir:
 """
 
 import logging
-from typing import Tuple, Dict, Any, Optional
+from typing import Tuple, Dict, Any
 
 import numpy as np
 import pandas as pd
 from sklearn.utils.class_weight import compute_class_weight
-from imblearn.under_sampling import RandomUnderSampler
-from imblearn.over_sampling import SMOTE
+
+# Pylance ve linter uyumlulugu icin dinamik guvenli import
+try:
+    from imblearn.under_sampling import RandomUnderSampler  # type: ignore
+    from imblearn.over_sampling import SMOTE  # type: ignore
+    HAS_IMBLEARN = True
+except ImportError:
+    HAS_IMBLEARN = False
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("Imbalance")
@@ -132,6 +138,10 @@ def apply_sampling_strategy(
         return X_train.copy(), y_train.copy()
 
     elif method == "undersample":
+        if not HAS_IMBLEARN:
+            logger.warning("imblearn yuklu degil, ornekleme yapilamadi.")
+            return X_train.copy(), y_train.copy()
+
         # Rastgele Çoğunluk Alt Örnekleme (Random Undersampling)
         rus = RandomUnderSampler(
             sampling_strategy=sampling_strategy,
@@ -142,12 +152,15 @@ def apply_sampling_strategy(
             f"Random Undersampling tamamlandi: Onceki boyut={len(X_train):,} -> Yeni boyut={len(X_res):,} "
             f"(Fraud: {(y_res == 1).sum():,}, Normal: {(y_res == 0).sum():,})"
         )
-        return pd.DataFrame(X_res, columns=X_train.columns), pd.Series(y_res, name=y_train.name)
+        return pd.DataFrame(X_res, columns=list(X_train.columns)), pd.Series(y_res, name=y_train.name)
 
     elif method == "smote":
+        if not HAS_IMBLEARN:
+            logger.warning("imblearn yuklu degil, SMOTE uygulanamadi.")
+            return X_train.copy(), y_train.copy()
+
         # SMOTE: Sentetik Azınlık Aşırı Örnekleme
-        # Sentetik veri k-komşuluk ile üretilir (Varsayılan k_neighbors=5)
-        n_minority = (y_train == 1).sum()
+        n_minority = int((y_train == 1).sum())
         k_neighbors = min(5, max(1, n_minority - 1))
 
         smote = SMOTE(
@@ -160,7 +173,7 @@ def apply_sampling_strategy(
             f"SMOTE tamamlandi: Onceki boyut={len(X_train):,} -> Yeni boyut={len(X_res):,} "
             f"(Fraud: {(y_res == 1).sum():,}, Normal: {(y_res == 0).sum():,})"
         )
-        return pd.DataFrame(X_res, columns=X_train.columns), pd.Series(y_res, name=y_train.name)
+        return pd.DataFrame(X_res, columns=list(X_train.columns)), pd.Series(y_res, name=y_train.name)
 
     else:
         raise ValueError(f"Bilinmeyen dengeleme stratejisi: '{method}'. Desteklenenler: 'none', 'undersample', 'smote'")

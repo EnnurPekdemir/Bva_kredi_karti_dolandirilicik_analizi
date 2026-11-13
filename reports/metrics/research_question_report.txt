@@ -7,7 +7,7 @@ ARAŞTIRMA SORUSUNA AMPİRİK YANIT:
 1. KESİN YANIT: KISMEN EVET, ANCAK BELİRLİ BİR EŞİKTEN SONRA DOYUMA ULAŞIR (DIMINISHING RETURNS).
    - Veri boyutu %10.0'den %100.0'e (10 kat) cikarildiginda:
      * Test AUPRC skoru 0.8947'den 0.5064'e (-0.3883 fark) gelismistir.
-     * Ancak egitim suresi 1.29 saniyeden 2.33 saniyeye (1.8x kat) cikmistir.
+     * Ancak egitim suresi 0.16 saniyeden 0.35 saniyeye (2.2x kat) cikmistir.
 
 2. NEDEN BÖYLE OLUYOR?
    a) Mutlak Pozitif Sayısı Etkisi: Veri hacmi arttığında modelin gördüğü dolandırıcı işlem sayısı artar 
