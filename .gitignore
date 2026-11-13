@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Matplotlib & Environment Caches
+.mpl_cache/
+.matplotlib/
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

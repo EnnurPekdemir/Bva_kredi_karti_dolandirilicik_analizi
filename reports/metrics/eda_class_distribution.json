@@ -1,0 +1,8 @@
+{
+    "total_transactions": 30000,
+    "normal_transactions": 29949,
+    "fraud_transactions": 51,
+    "normal_ratio_percent": 99.83,
+    "fraud_ratio_percent": 0.17,
+    "imbalance_ratio_1_to_k": 587.24
+}
