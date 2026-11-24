@@ -51,16 +51,181 @@
 
         /* HEADER */
         header {
-            background: rgba(17, 24, 39, 0.85);
+            background: rgba(17, 24, 39, 0.95);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
+            padding: 1rem 2.5rem;
             position: sticky;
             top: 0;
             z-index: 100;
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+
+        /* PROJECTION / HIGH CONTRAST MODE */
+        body.projector-mode {
+            --bg-base: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --border-hover: #3b82f6;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --primary: #2563eb;
+            background-image: none;
+        }
+
+        body.projector-mode header {
+            background: #ffffff;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        body.projector-mode .brand-title {
+            background: none;
+            -webkit-text-fill-color: #0f172a;
+            color: #0f172a;
+            font-size: 1.35rem;
+        }
+
+        body.projector-mode .brand-subtitle {
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        body.projector-mode .nav-wrapper {
+            background: #f1f5f9;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        body.projector-mode .tab-btn {
+            color: #475569;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        body.projector-mode .tab-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        body.projector-mode .tab-btn.active .tab-badge {
+            background: #ffffff;
+            color: #2563eb;
+            font-weight: 800;
+        }
+
+        body.projector-mode .hero-banner {
+            background: linear-gradient(135deg, #e2e8f0, #ffffff);
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        body.projector-mode .hero-text h2 {
+            color: #0f172a;
+            font-size: 2rem;
+        }
+
+        body.projector-mode .hero-text p {
+            color: #334155;
+            font-size: 1.15rem;
+            font-weight: 500;
+        }
+
+        body.projector-mode .metric-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        body.projector-mode .metric-label {
+            color: #475569;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        body.projector-mode .metric-value {
+            color: #0f172a;
+            font-size: 2.3rem;
+        }
+
+        body.projector-mode .speech-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.1);
+        }
+
+        body.projector-mode .speech-title {
+            color: #1d4ed8;
+            font-size: 1.25rem;
+        }
+
+        body.projector-mode .speech-content {
+            color: #1e293b;
+            font-size: 1.3rem;
+            line-height: 1.8;
+            border-left: 4px solid #2563eb;
+        }
+
+        body.projector-mode .speech-content strong {
+            color: #0f172a;
+            background: #fef08a;
+            padding: 0 4px;
+            border-radius: 4px;
+        }
+
+        body.projector-mode .content-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        }
+
+        body.projector-mode .figure-wrapper {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+        }
+
+        body.projector-mode .qa-box {
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+        }
+
+        body.projector-mode .qa-q {
+            color: #b45309;
+            font-size: 1.1rem;
+        }
+
+        body.projector-mode .qa-a {
+            color: #1f2937;
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+
+        /* BIGGER FONTS DEFAULT FOR PROJECTOR READABILITY */
+        .speech-content {
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .metric-value {
+            font-size: 2.2rem;
+        }
+
+        .hero-text h2 {
+            font-size: 1.85rem;
+        }
+
+        /* PROGRESS BAR AT TOP */
+        #presentation-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6, #10b981);
+            width: 20%;
+            z-index: 9999;
+            transition: width 0.3s ease;
         }
 
         .brand-container {
@@ -530,6 +695,8 @@
     </style>
 </head>
 <body>
+    <!-- TOP PROGRESS BAR FOR AUDIENCE -->
+    <div id="presentation-progress"></div>
 
     <!-- TOP HEADER -->
     <header>
@@ -539,16 +706,29 @@
             </div>
             <div>
                 <div class="brand-title">Kredi Kartı Dolandırıcılık Analizi (Credit Card Fraud)</div>
-                <div class="brand-subtitle">Büyük Veri Mühendisliği & Makine Öğrenimi Sunum Portalı</div>
+                <div class="brand-subtitle">Büyük Veri & Makine Öğrenimi | 5 Öğrenci Sunum Portalı</div>
             </div>
         </div>
         <div class="header-actions">
+            <!-- PROJECTION MODE TOGGLE -->
+            <button class="btn" id="projectorBtn" onclick="toggleProjectorMode()" title="Projeksiyon / Yüksek Kontrast Açık Tema Modu">
+                <i class="fa-solid fa-sun text-warning"></i>
+                <span id="projectorBtnText">Projektör Açık Modu</span>
+            </button>
+            <!-- NOTES TOGGLE -->
+            <button class="btn" id="notesBtn" onclick="toggleNotes()" title="Konuşma Notlarını Göster / Gizle">
+                <i class="fa-solid fa-eye-slash"></i>
+                <span id="notesBtnText">Notları Gizle</span>
+            </button>
+            <!-- STATUS BADGE -->
             <div class="status-badge">
                 <div class="pulse-dot"></div>
-                <span>Pipeline Hazır & Doğrulandı</span>
+                <span>Canlı Pipeline Hazır</span>
             </div>
-            <button class="btn" onclick="toggleFullScreen()" title="Tam Ekran Modu">
+            <!-- FULLSCREEN TOGGLE -->
+            <button class="btn btn-primary" onclick="toggleFullScreen()" title="Tam Ekran Projeksiyon Modu">
                 <i class="fa-solid fa-expand"></i>
+                <span>Tam Ekran (F11)</span>
             </button>
         </div>
     </header>
@@ -1061,6 +1241,8 @@ df = df.withColumn("delta_time_sec", F.col("Time_sec") - F.lag("Time_sec", 1).ov
     <script>
         let currentTab = 0;
         const totalTabs = 5;
+        let notesVisible = true;
+        let projectorMode = false;
 
         function switchTab(index) {
             currentTab = index;
@@ -1081,6 +1263,10 @@ df = df.withColumn("delta_time_sec", F.col("Time_sec") - F.lag("Time_sec", 1).ov
             document.getElementById('nextBtn').innerHTML = (index === totalTabs - 1) ? 'Sunumu Tamamla <i class="fa-solid fa-check"></i>' : 'Sonraki Öğrenci <i class="fa-solid fa-arrow-right"></i>';
             document.getElementById('pageIndicator').innerText = `Sayfa ${index + 1} / ${totalTabs}`;
 
+            // Update top progress bar for projector view
+            const progressPct = ((index + 1) / totalTabs) * 100;
+            document.getElementById('presentation-progress').style.width = progressPct + '%';
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1098,10 +1284,61 @@ df = df.withColumn("delta_time_sec", F.col("Time_sec") - F.lag("Time_sec", 1).ov
             }
         }
 
-        // Keyboard arrows navigation
+        // Toggle Projector High-Contrast Mode (Açık/Koyu Tema)
+        function toggleProjectorMode() {
+            projectorMode = !projectorMode;
+            document.body.classList.toggle('projector-mode', projectorMode);
+            const btnText = document.getElementById('projectorBtnText');
+            const icon = document.querySelector('#projectorBtn i');
+            if (projectorMode) {
+                btnText.innerText = "Koyu Moda Dön";
+                icon.className = "fa-solid fa-moon text-primary";
+            } else {
+                btnText.innerText = "Projektör Açık Modu";
+                icon.className = "fa-solid fa-sun text-warning";
+            }
+        }
+
+        // Toggle Speech Notes (Sunum Notlarını Gizle/Göster)
+        function toggleNotes() {
+            notesVisible = !notesVisible;
+            const speechBoxes = document.querySelectorAll('.speech-box');
+            speechBoxes.forEach(box => {
+                box.style.display = notesVisible ? 'block' : 'none';
+            });
+            const btnText = document.getElementById('notesBtnText');
+            const icon = document.querySelector('#notesBtn i');
+            if (notesVisible) {
+                btnText.innerText = "Notları Gizle";
+                icon.className = "fa-solid fa-eye-slash";
+            } else {
+                btnText.innerText = "Notları Göster";
+                icon.className = "fa-solid fa-eye text-primary";
+            }
+        }
+
+        // Keyboard & Presenter Clicker Support (Sunum Kumandası & Klavye Desteği)
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') nextTab();
-            if (e.key === 'ArrowLeft') prevTab();
+            // Sağ Ok, Boşluk (Space), PageDown veya Enter -> İLERİ
+            if (['ArrowRight', 'PageDown', 'Space'].includes(e.code) || e.key === 'ArrowRight') {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    nextTab();
+                }
+            }
+            // Sol Ok veya PageUp -> GERİ
+            else if (['ArrowLeft', 'PageUp'].includes(e.code) || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevTab();
+            }
+            // F Tuşu -> Tam Ekran
+            else if (e.key === 'f' || e.key === 'F') {
+                toggleFullScreen();
+            }
+            // P Tuşu -> Projektör Modu
+            else if (e.key === 'p' || e.key === 'P') {
+                toggleProjectorMode();
+            }
         });
 
         // Fullscreen toggle
