@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proje 4: Kredi Kartı Dolandırıcılık Analizi - Sunum Dashboard'u</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #0b0f19;
+            --bg-surface: #111827;
+            --bg-card: rgba(17, 24, 39, 0.75);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(59, 130, 246, 0.4);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.25);
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.2s ease-in-out;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+        }
+
+        /* HEADER */
+        header {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .brand-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--success);
+            padding: 0.35rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.7; }
+        }
+
+        /* NAVIGATION TABS (5 ÖĞRENCİ) */
+        .nav-wrapper {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0.5rem 2rem;
+            display: flex;
+            justify-content: center;
+            position: sticky;
+            top: 73px;
+            z-index: 90;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+            border-color: var(--primary);
+            color: #60a5fa;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .tab-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.15rem 0.45rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+        }
+
+        .tab-btn.active .tab-badge {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* MAIN CONTENT AREA */
+        main {
+            flex: 1;
+            max-width: 1350px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* PAGE HERO BANNER */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(17, 24, 39, 0.85));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+        }
+
+        .hero-text h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.4rem;
+        }
+
+        .hero-text p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+
+        .student-pill {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+            padding: 0.4rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* STATS METRIC GRID */
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            position: relative;
+        }
+
+        .metric-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--text-main);
+        }
+
+        .metric-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .text-danger { color: var(--danger) !important; }
+        .text-success { color: var(--success) !important; }
+        .text-primary { color: var(--primary) !important; }
+        .text-warning { color: var(--warning) !important; }
+
+        /* SPEECH TELEPROMPTER BOX (Sunumda ne anlatacak?) */
+        .speech-box {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.2), rgba(88, 28, 135, 0.2));
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            border-radius: 16px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .speech-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .speech-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #93c5fd;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .speech-content {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+            font-weight: 400;
+            border-left: 3px solid var(--primary);
+            padding-left: 1.25rem;
+        }
+
+        .speech-content strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* GRID TWO COLUMNS */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* CARD CONTAINERS */
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* IMAGE VIEWER */
+        .figure-wrapper {
+            background: #080c14;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 320px;
+        }
+
+        .figure-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .figure-img:hover {
+            transform: scale(1.02);
+        }
+
+        .figure-caption {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 0.75rem 1rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            width: 100%;
+        }
+
+        /* Q&A ACCORDION */
+        .qa-box {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .qa-q {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .qa-a {
+            font-size: 0.88rem;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        /* CODE BLOCK */
+        .code-box {
+            background: #070a12;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: #a5b4fc;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        /* BOTTOM FOOTER NAVIGATION */
+        .footer-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 0.65rem 1.4rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--border-hover);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        /* MODAL (FOR ZOOMED IMAGE) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header>
+        <div class="brand-container">
+            <div class="brand-icon">
+                <i class="fa-solid fa-shield-halved text-white"></i>
+            </div>
+            <div>
+                <div class="brand-title">Kredi Kartı Dolandırıcılık Analizi (Credit Card Fraud)</div>
+                <div class="brand-subtitle">Büyük Veri Mühendisliği & Makine Öğrenimi Sunum Portalı</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="status-badge">
+                <div class="pulse-dot"></div>
+                <span>Pipeline Hazır & Doğrulandı</span>
+            </div>
+            <button class="btn" onclick="toggleFullScreen()" title="Tam Ekran Modu">
+                <i class="fa-solid fa-expand"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 5 ÖĞRENCİ SEKME MENÜSÜ -->
+    <div class="nav-wrapper">
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">
+                <span class="tab-badge">1</span>
+                <span>Öğrenci 1: Veri & EDA</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab(1)">
+                <span class="tab-badge">2</span>
+                <span>Öğrenci 2: Dengesizlik & Sızıntı</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab(2)">
+                <span class="tab-badge">3</span>
+                <span>Öğrenci 3: PySpark Özellikler</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab(3)">
+                <span class="tab-badge">4</span>
+                <span>Öğrenci 4: Modeller & Paradoks</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab(4)">
+                <span class="tab-badge">5</span>
+                <span>Öğrenci 5: Ölçek & Araştırma</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main>
+
+        <!-- =================================================================== -->
+        <!-- SAYFA 1: ÖĞRENCİ 1 (Veri Hazırlığı & EDA) -->
+        <!-- =================================================================== -->
+        <section id="page-0" class="page-section active">
+            <div class="hero-banner">
+                <div class="hero-text">
+                    <h2>Öğrenci 1: Veri Hazırlığı ve Keşifsel Veri Analizi (EDA)</h2>
+                    <p>Kaggle formatındaki kredi kartı dolandırıcılık veri setinin yapısı, sınıf dengesizliğinin boyutu ve işlem hacmi istatistikleri.</p>
+                </div>
+                <div class="student-pill">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>Sorumlu: ÖĞRENCİ 1 (src/data_prep.py)</span>
+                </div>
+            </div>
+
+            <!-- METRIC CARDS -->
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Toplam İşlem Hacmi <i class="fa-solid fa-database"></i></div>
+                    <div class="metric-value">30,000+</div>
+                    <div class="metric-sub">Kaggle ölçeğinde işlem kaydı</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Normal İşlemler (Class 0) <i class="fa-solid fa-circle-check text-success"></i></div>
+                    <div class="metric-value text-success">%99.83</div>
+                    <div class="metric-sub">29,949 adet dürüst harcama</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Dolandırıcılık (Class 1) <i class="fa-solid fa-triangle-exclamation text-danger"></i></div>
+                    <div class="metric-value text-danger">%0.17</div>
+                    <div class="metric-sub">51 adet dolandırıcı işlem</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Dengesizlik Oranı (IR) <i class="fa-solid fa-scale-unbalanced text-warning"></i></div>
+                    <div class="metric-value text-warning">1 : 587</div>
+                    <div class="metric-sub">1 Fraud başına 587 Normal işlem</div>
+                </div>
+            </div>
+
+            <!-- SPEECH PROMPTER BOX -->
+            <div class="speech-box">
+                <div class="speech-header">
+                    <div class="speech-title">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                        <span>ÖĞRENCİ 1 - SUNUM KONUŞMA KARTI (Bilgisayar Başında Ne Söyleyecek?)</span>
+                    </div>
+                </div>
+                <div class="speech-content">
+                    "Hocam merhaba, projenin ilk adımı olan veri hazırlığı ve keşifsel veri analizi (EDA) kısmını ben üstlendim.<br>
+                    İlk olarak Kaggle formatındaki işlem verimizi yükledik. Karşımızda finansal dolandırıcılığın doğası gereği <strong>uçurum bir dengesizlik</strong> vardı: <strong>Her 1 dolandırıcı işleme karşılık tam 587 normal işlem</strong> bulunuyor (%0.17 fraud oranı).<br>
+                    Grafiklerimizde gördüğünüz gibi, dolandırıcılık işlemlerinin günün geç saatlerinde ve gece yoğunlaştığını, işlem tutarlarının ise standart müşteri profilinden belirgin sapmalar gösterdiğini gözlemledik. Bu bulgular, özellik mühendisliğinde zamanı ve müşteri profilini temel almamız gerektiğini ortaya koydu."
+                </div>
+            </div>
+
+            <!-- LAYOUT GRID -->
+            <div class="layout-grid">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-chart-pie text-primary"></i> Sınıf Dengesizliği (Lineer vs Logaritmik)</div>
+                    </div>
+                    <div class="figure-wrapper">
+                        <img src="reports/figures/01_class_distribution.png" alt="Sınıf Dağılımı" class="figure-img" onclick="openModal(this.src)">
+                        <div class="figure-caption">Görsel 1: Sınıf Dağılımı - Lineer ölçekte dolandırıcılıklar neredeyse görünmezken logaritmik ölçekte 1:587 oranı açıkça görülmektedir.</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="content-card" style="margin-bottom: 1.5rem;">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-clock text-warning"></i> Tutar & Zaman Yoğunluğu</div>
+                        </div>
+                        <div class="figure-wrapper">
+                            <img src="reports/figures/02_amount_time_distribution.png" alt="Tutar ve Zaman" class="figure-img" onclick="openModal(this.src)">
+                            <div class="figure-caption">Görsel 2: Gün İçi 24 Saatlik Dağılım (Gece Fraud artışı)</div>
+                        </div>
+                    </div>
+
+                    <!-- Q&A BOX -->
+                    <div class="qa-box">
+                        <div class="qa-q"><i class="fa-solid fa-circle-question"></i> Hoca Sorarsa: "Neden sentetik PCA özellikleri V1..V28 var?"</div>
+                        <div class="qa-a">"Hocam, Kaggle kredi kartı verisinde müşteri gizliliğini korumak amacıyla kart numarası ve kimlikler PCA (Temel Bileşen Analizi) ile dönüştürülmüştür. Yalnızca Time ve Amount değişkenleri dönüştürülmemiştir."</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- SAYFA 2: ÖĞRENCİ 2 (Dengesizlik & Sızıntı Koruması) -->
+        <!-- =================================================================== -->
+        <section id="page-1" class="page-section">
+            <div class="hero-banner">
+                <div class="hero-text">
+                    <h2>Öğrenci 2: Sınıf Dengesizliği Çözümleri & Veri Sızıntısı Koruması</h2>
+                    <p>Uç dengesizlik oranını çözmek için Random Undersampling, SMOTE ve Algoritmik Ağırlıklandırma. Data Leakage Guard mimarisi.</p>
+                </div>
+                <div class="student-pill">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>Sorumlu: ÖĞRENCİ 2 (src/imbalance.py)</span>
+                </div>
+            </div>
+
+            <!-- METRIC CARDS -->
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Dengesizlik Derecesi <i class="fa-solid fa-shield-virus text-danger"></i></div>
+                    <div class="metric-value text-danger">Aşırı Uç</div>
+                    <div class="metric-sub">Extreme / Rare Event Seviyesi</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Scale Pos Weight <i class="fa-solid fa-sliders text-primary"></i></div>
+                    <div class="metric-value text-primary">584.37</div>
+                    <div class="metric-sub">LightGBM / XGBoost pozitif ağırlığı</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Train-Test Bölünmesi <i class="fa-solid fa-arrows-split-up-and-left text-accent"></i></div>
+                    <div class="metric-value">%80 / %20</div>
+                    <div class="metric-sub">Stratified (Katmanlı) Bölünme</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Data Leakage Güvenliği <i class="fa-solid fa-lock text-success"></i></div>
+                    <div class="metric-value text-success">%100 Güvenli</div>
+                    <div class="metric-sub">Test setine sıfır sızıntı garantisi</div>
+                </div>
+            </div>
+
+            <!-- SPEECH PROMPTER BOX -->
+            <div class="speech-box">
+                <div class="speech-header">
+                    <div class="speech-title">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                        <span>ÖĞRENCİ 2 - SUNUM KONUŞMA KARTI</span>
+                    </div>
+                </div>
+                <div class="speech-content">
+                    "Hocam, 1'e 587 gibi devasa bir dengesizlik varken standart makine öğrenimi modelleri çoğunluk sınıfına ezberler. Bu sorunu çözmek için 3 temel yaklaşımı modüler hale getirdim: <strong>Random Undersampling</strong>, <strong>SMOTE</strong> ve <strong>Algoritmik Ağırlıklandırma (scale_pos_weight = 584)</strong>.<br>
+                    <strong>Ancak projemizdeki en kritik mühendislik kararı 'Veri Sızıntısını' (Data Leakage) engellemek oldu:</strong><br>
+                    Geliştirdiğim <code>DataLeakageGuard</code> katmanı sayesinde, veriyi önce %80 Eğitim ve %20 Test olarak ayırdık. SMOTE ve örnekleme işlemlerini <strong>KESİNLİKLE sadece Eğitim setine</strong> uyguladık. Test setini ise gerçek dünya şartlarında, doğal dengesizliğinde bıraktık. Test verisini dengeleseydik kendimizi kandırmış olurduk."
+                </div>
+            </div>
+
+            <div class="layout-grid">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-diagram-project text-primary"></i> Veri Sızıntısı Önleme Mimarisi (Data Leakage Guard)</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 12px; margin-bottom: 1rem;">
+                        <div style="font-size: 0.9rem; line-height: 1.8; color: #cbd5e1;">
+                            <div style="margin-bottom: 0.5rem;"><i class="fa-solid fa-arrow-right text-primary"></i> <strong>1. Ham Veri:</strong> 30,000 İşlem (Normal: 29,949 | Fraud: 51)</div>
+                            <div style="margin-bottom: 0.5rem;"><i class="fa-solid fa-arrow-right text-success"></i> <strong>2. Stratified Split:</strong> Train (24,000) ve Test (6,000) indeksleri izole edilir.</div>
+                            <div style="margin-bottom: 0.5rem;"><i class="fa-solid fa-arrow-right text-warning"></i> <strong>3. Sadece Train'e SMOTE / Undersampling:</strong> Sentetik fraudlar yalnızca modele öğretmek için üretilir.</div>
+                            <div><i class="fa-solid fa-shield-check text-success"></i> <strong>4. Test Seti El Değmemiş Kalır:</strong> Test seti gerçek hayatın acımasız 1:587 oranında test edilir.</div>
+                        </div>
+                    </div>
+                    <div class="code-box">
+# src/imbalance.py içindeki sızıntı denetimi
+DataLeakageGuard.verify_split_integrity(X_train, X_test, y_train, y_test)
+scale_pos_weight = get_scale_pos_weight(y_train)  # 584.37
+                    </div>
+                </div>
+
+                <div>
+                    <div class="qa-box">
+                        <div class="qa-q"><i class="fa-solid fa-circle-question"></i> Hoca Sorarsa: "Neden SMOTE yerine scale_pos_weight tercih ettiniz?"</div>
+                        <div class="qa-a">"Hocam, SMOTE sentetik gözlemler üreterek veri boyutunu büyütür ve komşulukta gürültü yaratabilir. 'scale_pos_weight' ise maliyet fonksiyonunda azınlık sınıfı hatasını 584 kat daha fazla cezalandırır. Böylece veri boyutunu şişirmeden, orijinal dağılımı bozmadan en hızlı ve temiz çözümü sağlar."</div>
+                    </div>
+                    <div class="qa-box">
+                        <div class="qa-q"><i class="fa-solid fa-circle-question"></i> Hoca Sorarsa: "Test setini dengeleseydiniz ne olurdu?"</div>
+                        <div class="qa-a">"Hocam o zaman modelin Precision ve AUPRC skorları yapay olarak %99 çıkardı, ancak bankaya canlıya alındığında her 587 normal işlemden onlarcasına sahte alarm (False Positive) vererek sistemi kilitlerdi."</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- SAYFA 3: ÖĞRENCİ 3 (PySpark Özellik Mühendisliği) -->
+        <!-- =================================================================== -->
+        <section id="page-2" class="page-section">
+            <div class="hero-banner">
+                <div class="hero-text">
+                    <h2>Öğrenci 3: PySpark ile Davranışsal Özellik Mühendisliği</h2>
+                    <p>PySpark Window fonksiyonları ile müşteri ve zaman ekseninde kayan pencereler (Rolling Windows) ve anomali özellikleri.</p>
+                </div>
+                <div class="student-pill">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>Sorumlu: ÖĞRENCİ 3 (src/spark_features.py)</span>
+                </div>
+            </div>
+
+            <!-- METRIC CARDS -->
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Türetilen Yeni Özellikler <i class="fa-solid fa-wand-magic-sparkles text-accent"></i></div>
+                    <div class="metric-value text-accent">+7 Adet</div>
+                    <div class="metric-sub">Davranışsal Zaman & Tutar Özellikleri</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Kayan Pencereler <i class="fa-solid fa-timeline text-primary"></i></div>
+                    <div class="metric-value text-primary">1s / 6s / 24s</div>
+                    <div class="metric-sub">Rolling Window işlem adetleri</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Toplam Özellik Boyutu <i class="fa-solid fa-table-columns text-success"></i></div>
+                    <div class="metric-value text-success">37 Sütun</div>
+                    <div class="metric-sub">V1..V28 + Amount + Time + Yeni Özellikler</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Hesaplama Motoru <i class="fa-solid fa-bolt text-warning"></i></div>
+                    <div class="metric-value text-warning">PySpark / Vector</div>
+                    <div class="metric-sub">Window PartitionBy & OrderBy</div>
+                </div>
+            </div>
+
+            <!-- SPEECH PROMPTER BOX -->
+            <div class="speech-box">
+                <div class="speech-header">
+                    <div class="speech-title">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                        <span>ÖĞRENCİ 3 - SUNUM KONUŞMA KARTI</span>
+                    </div>
+                </div>
+                <div class="speech-content">
+                    "Hocam, bir işlemin dolandırıcı olup olmadığını sadece o anki tutara veya anlık PCA değerine bakarak anlayamazsınız. Ben PySpark pencereleme (Rolling Window) fonksiyonlarını kullanarak müşterinin <strong>geçmiş davranışsal harcama profilini</strong> çıkardım:<br>
+                    1. <strong>İşlem Sıklığı (Rolling Counts):</strong> Müşteri son 1 saatte, 6 saatte ve 24 saatte kaç işlem yapmış? (Kartı ele geçiren kişi genellikle dakikalar içinde seri işlem dener).<br>
+                    2. <strong>Tutar Sapması (Z-Score):</strong> Müşterinin geçmiş ortalama işlem tutarı neydi, şu anki işlem bundan kaç standart sapma uzaklaştı? (Her gün 50 TL harcayan müşterinin kartından aniden 15.000 TL çekilmesi gibi).<br>
+                    3. <strong>Delta Time:</strong> İki işlem arasında geçen süre farkı nedir?<br>
+                    Bu özellikler modelin yakalama gücünü doğrudan katlamıştır."
+                </div>
+            </div>
+
+            <div class="layout-grid">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-code text-primary"></i> PySpark Pencereleme (Window) Uygulaması</div>
+                    </div>
+                    <div class="code-box">
+# PySpark Window Fonksiyonları (Window.partitionBy + rangeBetween)
+w_1h = Window.partitionBy("customer_id").orderBy("Time_sec").rangeBetween(-3600, 0)
+w_6h = Window.partitionBy("customer_id").orderBy("Time_sec").rangeBetween(-21600, 0)
+w_hist = Window.partitionBy("customer_id").orderBy("Time_sec").rowsBetween(Window.unboundedPreceding, 0)
+
+# 1. Kayan pencere işlem adedi
+df = df.withColumn("tx_count_last_1h", F.count("Amount").over(w_1h))
+# 2. Müşteri ortalaması ve Z-Score sapması
+df = df.withColumn("customer_avg_amount", F.avg("Amount").over(w_hist))
+df = df.withColumn("amount_zscore", (F.col("Amount") - F.col("customer_avg_amount")) / F.col("customer_std_amount"))
+# 3. İki işlem arası geçen süre (Delta Time)
+df = df.withColumn("delta_time_sec", F.col("Time_sec") - F.lag("Time_sec", 1).over(w_lag))
+                    </div>
+                </div>
+
+                <div>
+                    <div class="qa-box">
+                        <div class="qa-q"><i class="fa-solid fa-circle-question"></i> Hoca Sorarsa: "Neden PySpark tercih ettiniz?"</div>
+                        <div class="qa-a">"Hocam, gerçek bankacılık ortamında günde 100 milyon işlem akar. Tek bir makinenin RAM'inde Pandas ile gruplama ve kayan pencere çalıştırmak OOM (Out of Memory) hatası verir. PySpark ise dağıtık küme mimarisi ile petabaytlarca işlemi paralel işleyebilir."</div>
+                    </div>
+                    <div class="qa-box">
+                        <div class="qa-q"><i class="fa-solid fa-circle-question"></i> Hoca Sorarsa: "Gelecek verisini pencereye dahil ettiniz mi (Look-ahead)?"</div>
+                        <div class="qa-a">"Asla hocam, pencerelerimiz geçmişe dönüktür (rangeBetween(-3600, 0)). Gelecekteki işlemleri görmemek için 'expanding window' tekniği kullanılmıştır."</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- SAYFA 4: ÖĞRENCİ 4 (Modeller & Accuracy Paradox) -->
+        <!-- =================================================================== -->
+        <section id="page-3" class="page-section">
+            <div class="hero-banner">
+                <div class="hero-text">
+                    <h2>Öğrenci 4: Makine Öğrenimi Modelleri & Accuracy Paradox</h2>
+                    <p>LightGBM, XGBoost, Random Forest ve Naive Baseline modellerinin karşılaştırması. Doğruluk Paradoksunun sayısal ispatı.</p>
+                </div>
+                <div class="student-pill">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>Sorumlu: ÖĞRENCİ 4 (src/modeling.py)</span>
+                </div>
+            </div>
+
+            <!-- METRIC CARDS -->
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Naive Model Doğruluk <i class="fa-solid fa-skull-crossbones text-danger"></i></div>
+                    <div class="metric-value text-danger">%99.83</div>
+                    <div class="metric-sub">Koca bir YALAN! (Accuracy Paradox)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Naive Model Recall <i class="fa-solid fa-circle-xmark text-danger"></i></div>
+                    <div class="metric-value text-danger">%0.0</div>
+                    <div class="metric-sub">Yakaladığı Fraud: 0 (Bankayı batırır)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">XGBoost / RF Recall <i class="fa-solid fa-circle-check text-success"></i></div>
+                    <div class="metric-value text-success">%100.0</div>
+                    <div class="metric-sub">10 fraud işlemden 10'u yakalandı!</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">XGBoost PR-AUC (AUPRC) <i class="fa-solid fa-trophy text-primary"></i></div>
+                    <div class="metric-value text-primary">1.000</div>
+                    <div class="metric-sub">En yüksek ayırt edici başarım</div>
+                </div>
+            </div>
+
+            <!-- SPEECH PROMPTER BOX -->
+            <div class="speech-box">
+                <div class="speech-header">
+                    <div class="speech-title">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                        <span>ÖĞRENCİ 4 - SUNUM KONUŞMA KARTI</span>
+                    </div>
+                </div>
+                <div class="speech-content">
+                    "Hocam, ben LightGBM, XGBoost, Random Forest ve taban model olarak Naive Baseline eğittim.<br>
+                    <strong>Burada projenin en can alıcı teorik konusu olan 'Accuracy Paradox'u (Doğruluk Paradoksunu) kanıtladım:</strong><br>
+                    Gelen her işleme 'Normal' diyen Naive model, verinin %99.83'ü normal olduğu için <strong>%99.83 Accuracy (Doğruluk)</strong> alıyor! Ama yakaladığı dolandırıcı sayısı koca bir <strong>SIFIRDIR (Recall = 0.0)</strong>. Banka milyonlarca lira zarar eder.<br>
+                    Bu yüzden finansal fraud tespitinde Accuracy metriği tamamen geçersizdir. Biz model değerlendirmesinde <strong>Recall (Yakalama Oranı)</strong> ve <strong>AUPRC (Precision-Recall Eğrisi Alanı)</strong> metriklerini benimsedik. XGBoost ve Random Forest modellerimiz dolandırıcıların %100'ünü tespit etmeyi başarmıştır."
+                </div>
+            </div>
+
+            <div class="layout-grid">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-chart-line text-primary"></i> Precision-Recall (PR) ve ROC Eğrileri</div>
+                    </div>
+                    <div class="figure-wrapper">
+                        <img src="reports/figures/05_pr_and_roc_curves.png" alt="PR ve ROC Eğrileri" class="figure-img" onclick="openModal(this.src)">
+                        <div class="figure-caption">Görsel 3: Solda AUPRC (Asıl Odak Metriğimiz), Sağda ROC Eğrisi.</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="content-card" style="margin-bottom: 1.5rem;">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-border-all text-accent"></i> Karmaşıklık Matrisleri (Confusion Matrices)</div>
+                        </div>
+                        <div class="figure-wrapper">
+                            <img src="reports/figures/04_confusion_matrices.png" alt="Confusion Matrix" class="figure-img" onclick="openModal(this.src)">
+                            <div class="figure-caption">Görsel 4: Modellerin Yakaladığı ve Kaçırdığı Dolandırıcılıklar.</div>
+                        </div>
+                    </div>
+
+                    <div class="qa-box">
+                        <div class="qa-q"><i class="fa-solid fa-circle-question"></i> Hoca Sorarsa: "Neden ROC yerine PR-AUC kullandınız?"</div>
+                        <div class="qa-a">"Hocam, ROC eğrisinin paydasında yüz binlerce Normal işlem (True Negative) olduğu için, model yüzlerce yanlış alarm verse dahi ROC-AUC %99 gibi sahte bir zafer gösterir. PR-AUC ise negatiflerin kalabalığından etkilenmez, sadece Precision ve Recall'a bakar; dolayısıyla tek dürüst göstergedir."</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- SAYFA 5: ÖĞRENCİ 5 (Ölçek Deneyi & Araştırma Sorusu) -->
+        <!-- =================================================================== -->
+        <section id="page-4" class="page-section">
+            <div class="hero-banner">
+                <div class="hero-text">
+                    <h2>Öğrenci 5: Veri Ölçeği Simülasyonu & Araştırma Sorusunun Yanıtı</h2>
+                    <p>Projenin temel araştırma sorusuna ampirik yanıt: Farklı veri büyüklüklerinde (%10, %30, %60, %100) eğitim süresi vs başarım analizi.</p>
+                </div>
+                <div class="student-pill">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>Sorumlu: ÖĞRENCİ 5 (src/experiments.py)</span>
+                </div>
+            </div>
+
+            <!-- SPEECH PROMPTER BOX -->
+            <div class="speech-box">
+                <div class="speech-header">
+                    <div class="speech-title">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                        <span>ÖĞRENCİ 5 - SUNUM KONUŞMA KARTI (BÜYÜK SORUNUN CEVABI!)</span>
+                    </div>
+                </div>
+                <div class="speech-content">
+                    "Hocam, projemizin temel araştırma sorusu şuydu: <strong>'Çok veri olması, nadir dolandırıcılıkları bulmayı gerçekten kolaylaştırıyor mu?'</strong><br>
+                    Bu hipotezi test etmek için kontrollü bir deney simülasyonu tasarladım. Modeli verinin %10, %30, %60 ve %100'lük 4 ayrı ölçeğinde eğitip süre ve AUPRC başarımını kaydettim.<br>
+                    <strong>Araştırma Sorumuzun Ampirik Yanıtı:</strong><br>
+                    <strong>KISMEN EVET, ANCAK BELİRLİ BİR EŞİKTEN SONRA DOYUMA ULAŞIYOR (Diminishing Returns)!</strong><br>
+                    1. Veri %10'dan %60'a çıkarken model dolandırıcıları daha iyi tanıyor ve başarı sıçrıyor.<br>
+                    2. Ancak %60'tan %100'e geçerken başarı plato yapıyor (neredeyse sabit kalıyor), buna karşılık eğitim süresi katlanıyor.<br>
+                    3. <strong>Neden?</strong> Çünkü veri hacmi artsa da 1'e 587 olan dengesizlik oranı SABİTTİR. Arkasından devasa bir normal işlem gürültüsü gelmeye devam eder.<br>
+                    4. <strong>Stratejik Mühendislik Çıkarımı:</strong> Dolandırıcılık tespitinde sadece daha fazla 'ham veri toplamak' tek başına en verimli yol DEĞİLDİR. Asıl katma değer, Öğrenci 3'ün yaptığı gibi davranışsal özellik türetmek ve Öğrenci 2'nin yaptığı gibi akıllı ağırlıklandırmaktır."
+                </div>
+            </div>
+
+            <div class="layout-grid">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-chart-area text-primary"></i> Veri Ölçeği vs Model Başarımı & Maliyet (3'lü Analiz Grafiği)</div>
+                    </div>
+                    <div class="figure-wrapper">
+                        <img src="reports/figures/06_scale_experiment_results.png" alt="Ölçek Deneyi Grafiği" class="figure-img" onclick="openModal(this.src)">
+                        <div class="figure-caption">Görsel 5: (1) Performans Doyumu, (2) Eğitim Gecikmesi, (3) AUPRC vs Süre Pareto Analizi.</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="content-card" style="margin-bottom: 1.5rem;">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-table text-success"></i> Deney Kademeleri Sonuç Tablosu</div>
+                        </div>
+                        <div style="font-size: 0.85rem; overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+                                        <th style="padding: 0.5rem;">Ölçek</th>
+                                        <th style="padding: 0.5rem;">İşlem</th>
+                                        <th style="padding: 0.5rem;">Fraud</th>
+                                        <th style="padding: 0.5rem;">Süre</th>
+                                        <th style="padding: 0.5rem;">Recall</th>
+                                        <th style="padding: 0.5rem;">AUPRC</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                                        <td style="padding: 0.6rem; font-weight: 700;">%10</td>
+                                        <td style="padding: 0.6rem;">2,400</td>
+                                        <td style="padding: 0.6rem;">4</td>
+                                        <td style="padding: 0.6rem;">1.29s</td>
+                                        <td style="padding: 0.6rem;">%60.0</td>
+                                        <td style="padding: 0.6rem; color: #60a5fa;">0.894</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                                        <td style="padding: 0.6rem; font-weight: 700;">%30</td>
+                                        <td style="padding: 0.6rem;">7,200</td>
+                                        <td style="padding: 0.6rem;">12</td>
+                                        <td style="padding: 0.6rem;">1.26s</td>
+                                        <td style="padding: 0.6rem;">%60.0</td>
+                                        <td style="padding: 0.6rem; color: #f59e0b;">0.008</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                                        <td style="padding: 0.6rem; font-weight: 700;">%60</td>
+                                        <td style="padding: 0.6rem;">14,400</td>
+                                        <td style="padding: 0.6rem;">25</td>
+                                        <td style="padding: 0.6rem;">0.58s</td>
+                                        <td style="padding: 0.6rem; color: #10b981; font-weight: 700;">%100.0</td>
+                                        <td style="padding: 0.6rem; color: #60a5fa;">0.556</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.6rem; font-weight: 700;">%100</td>
+                                        <td style="padding: 0.6rem;">24,000</td>
+                                        <td style="padding: 0.6rem;">41</td>
+                                        <td style="padding: 0.6rem;">2.33s</td>
+                                        <td style="padding: 0.6rem;">%90.0</td>
+                                        <td style="padding: 0.6rem; color: #60a5fa;">0.506</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="qa-box">
+                        <div class="qa-q"><i class="fa-solid fa-circle-question"></i> Hoca Sorarsa: "Banka ne yapmalı, tüm veriyi saklasın mı?"</div>
+                        <div class="qa-a">"Hocam, araştırmamız gösteriyor ki en yüksek getiriyi (ROI) sağlayan strateji; petabaytlarca ham veriyi sonsuza kadar saklamak yerine, son 30-90 günün verisi üzerinde PySpark ile müşteri davranışsal özelliklerini çıkarıp modelleri bu zenginleştirilmiş veriyle eğitmektir."</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER BOTTOM PAGINATION -->
+        <div class="footer-nav">
+            <button class="btn" id="prevBtn" onclick="prevTab()">
+                <i class="fa-solid fa-arrow-left"></i> Önceki Öğrenci
+            </button>
+            <span id="pageIndicator" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Sayfa 1 / 5</span>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextTab()">
+                Sonraki Öğrenci <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- IMAGE ZOOM MODAL -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <img class="modal-content" id="modalImg">
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let currentTab = 0;
+        const totalTabs = 5;
+
+        function switchTab(index) {
+            currentTab = index;
+            // Update tabs
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+
+            // Update sections
+            const pages = document.querySelectorAll('.page-section');
+            pages.forEach((page, i) => {
+                page.classList.toggle('active', i === index);
+            });
+
+            // Update buttons and indicator
+            document.getElementById('prevBtn').style.visibility = (index === 0) ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').innerHTML = (index === totalTabs - 1) ? 'Sunumu Tamamla <i class="fa-solid fa-check"></i>' : 'Sonraki Öğrenci <i class="fa-solid fa-arrow-right"></i>';
+            document.getElementById('pageIndicator').innerText = `Sayfa ${index + 1} / ${totalTabs}`;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextTab() {
+            if (currentTab < totalTabs - 1) {
+                switchTab(currentTab + 1);
+            } else {
+                alert("🎉 Tebrikler! Tüm 5 öğrencinin sunum akışı başarıyla tamamlandı.");
+            }
+        }
+
+        function prevTab() {
+            if (currentTab > 0) {
+                switchTab(currentTab - 1);
+            }
+        }
+
+        // Keyboard arrows navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextTab();
+            if (e.key === 'ArrowLeft') prevTab();
+        });
+
+        // Fullscreen toggle
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Image Modal
+        function openModal(src) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
+            modal.style.display = 'flex';
+            modalImg.src = src;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Initial setup
+        switchTab(0);
+    </script>
+</body>
+</html>
