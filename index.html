@@ -710,6 +710,11 @@
             </div>
         </div>
         <div class="header-actions">
+            <!-- LIVE RUN BUTTON (CANLI ÇALIŞTIR BUTONU) -->
+            <button class="btn btn-primary" onclick="openLiveDemoModal()" title="Hocaya canlı çalıştığını göstermek için tıklayın" style="background: linear-gradient(135deg, #10b981, #059669); border-color: #059669; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);">
+                <i class="fa-solid fa-play"></i>
+                <span>Canlı Çalıştır (Live Demo)</span>
+            </button>
             <!-- PROJECTION MODE TOGGLE -->
             <button class="btn" id="projectorBtn" onclick="toggleProjectorMode()" title="Projeksiyon / Yüksek Kontrast Açık Tema Modu">
                 <i class="fa-solid fa-sun text-warning"></i>
@@ -1237,6 +1242,55 @@ df = df.withColumn("delta_time_sec", F.col("Time_sec") - F.lag("Time_sec", 1).ov
         <img class="modal-content" id="modalImg">
     </div>
 
+    <!-- LIVE DEMO TERMINAL MODAL (HOCAYA CANLI ÇALIŞTIĞINI GÖSTERMEK İÇİN) -->
+    <div id="liveDemoModal" class="modal" style="display: none; cursor: default;">
+        <div style="background: #0d1117; border: 2px solid #30363d; border-radius: 16px; width: 90%; max-width: 950px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+            <!-- MODAL HEADER -->
+            <div style="background: #161b22; padding: 1rem 1.5rem; border-bottom: 1px solid #30363d; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="display: flex; gap: 6px;">
+                        <span style="width: 12px; height: 12px; background: #ff5f56; border-radius: 50%; display: inline-block;"></span>
+                        <span style="width: 12px; height: 12px; background: #ffbd2e; border-radius: 50%; display: inline-block;"></span>
+                        <span style="width: 12px; height: 12px; background: #27c93f; border-radius: 50%; display: inline-block;"></span>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; color: #58a6ff;">bash - python main.py --quick</span>
+                </div>
+                <button onclick="closeLiveDemoModal()" style="background: transparent; border: none; color: #8b949e; font-size: 1.3rem; cursor: pointer;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- MODAL TOOLBAR -->
+            <div style="padding: 1rem 1.5rem; background: #0d1117; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <div style="font-size: 0.9rem; font-weight: 700; color: #f0f6fc;">Arka Planda Gerçek Model Eğitimi & Büyük Veri Pipeline'ı</div>
+                    <div style="font-size: 0.8rem; color: #8b949e;">5 öğrencinin kodları (Veri -> PySpark -> SMOTE -> XGBoost -> Ölçek) sırayla icra edilir.</div>
+                </div>
+                <button id="runPipelineBtn" class="btn" onclick="executeLivePipeline()" style="background: #238636; border-color: #2ea043; font-weight: 700; padding: 0.6rem 1.3rem;">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span id="runBtnText">Canlı Pipeline'ı Başlat</span>
+                </button>
+            </div>
+
+            <!-- TERMINAL OUTPUT SCREEN -->
+            <div id="terminalScreen" style="flex: 1; padding: 1.25rem; background: #010409; font-family: var(--font-mono); font-size: 0.85rem; color: #7ee787; overflow-y: auto; line-height: 1.6; white-space: pre-wrap; min-height: 380px;">
+$ python main.py --quick
+[INFO] Canlı modeli ve pipeline'ı çalıştırmak için yukarıdaki 'Canlı Pipeline'ı Başlat' butonuna basın...
+veya terminalinizden şu komutu verin:
+
+> python main.py --quick
+
+(Tıklandığında arka plandaki Python motoru tetiklenir ve sonuçlar buraya canlı olarak akar.)
+            </div>
+
+            <!-- MODAL FOOTER -->
+            <div style="background: #161b22; padding: 0.75rem 1.5rem; border-top: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #8b949e;">
+                <span>Durum: <strong id="pipelineStatusText" style="color: #58a6ff;">Beklemede</strong></span>
+                <span>Proje: Bva_kredi_karti_dolandirilicik_analizi</span>
+            </div>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT LOGIC -->
     <script>
         let currentTab = 0;
@@ -1362,6 +1416,68 @@ df = df.withColumn("delta_time_sec", F.col("Time_sec") - F.lag("Time_sec", 1).ov
 
         function closeModal() {
             document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Live Demo Modal Controls
+        function openLiveDemoModal() {
+            document.getElementById('liveDemoModal').style.display = 'flex';
+        }
+
+        function closeLiveDemoModal() {
+            document.getElementById('liveDemoModal').style.display = 'none';
+        }
+
+        async function executeLivePipeline() {
+            const screen = document.getElementById('terminalScreen');
+            const statusText = document.getElementById('pipelineStatusText');
+            const runBtn = document.getElementById('runPipelineBtn');
+            const btnText = document.getElementById('runBtnText');
+
+            runBtn.disabled = true;
+            btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Model Eğitiliyor...';
+            statusText.innerText = "Python / PySpark Boru Hattı Çalışıyor...";
+            statusText.style.color = "#f59e0b";
+            screen.innerText = "$ python main.py --quick\n\n[INFO] Arka planda gerçek makine öğrenimi boru hattı başlatıldı...\n";
+
+            try {
+                // If served via app.py
+                const response = await fetch('/api/run-pipeline', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    screen.innerText = "$ python main.py --quick\n\n" + data.output;
+                    statusText.innerText = (data.status === "success") ? "Başarıyla Tamamlandı! (Grafikler ve Metrikler Güncellendi)" : "Hata ile Bitti";
+                    statusText.style.color = (data.status === "success") ? "#27c93f" : "#ff5f56";
+                } else {
+                    throw new Error("HTTP " + response.status);
+                }
+            } catch (err) {
+                // If opened as local file (file://) without app.py server running
+                screen.innerText += `
+[CANLI BAĞLANTI NOTU] Web arayüzü doğrudan dosya olarak (file://) açılmış görünüyor.
+Arka plandaki API'yi tetiklemek için terminalde 'python app.py' çalıştırabilir veya
+
+Hocanın gözü önünde canlı demo için doğrudan terminalde şu komutu yazabilirsiniz:
+
+================================================================================
+> python main.py --quick
+================================================================================
+
+[ÖNEMLİ BİLGİ - HOCAYA SÖYLENECEK]:
+"Hocam, projemiz modüler bir CLI/Backend mimarisidir.
+Gördüğünüz arayüz 'reports/' dizinindeki çalışan modelin çıktılarından beslenmektedir.
+İsterseniz terminalde 'python main.py --quick' yazarak arka plandaki 5 öğrencinin
+adımlarını (PySpark, SMOTE, XGBoost, Ölçek Deneyleri) saniyeler içinde canlı çalıştırabiliriz!"
+`;
+                statusText.innerText = "Terminalden 'python main.py --quick' çalıştırabilirsiniz.";
+                statusText.style.color = "#38bdf8";
+            } finally {
+                runBtn.disabled = false;
+                btnText.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Tekrar Çalıştır';
+            }
         }
 
         // Initial setup
