@@ -8,7 +8,7 @@ Bu modül aşağıdaki görevleri yerine getirir:
 2. Dengesizlik çözüm stratejilerini modüler olarak sunar:
    a) Rastgele Alt Örnekleme (Random Undersampling)
    b) SMOTE (Synthetic Minority Over-sampling Technique)
-   c) Algoritmik Dengeleme (Class Weight & Scale Pos Weight)
+   c) Algoritmik Dengeleme (Class Weight & Stabilized Scale Pos Weight)
 3. Veri Sızıntısını (Data Leakage) önleyen mekanizma:
    - Dengeleme algoritmalarının KESİNLİKLE sadece eğitim (train) verisine
      uygulanmasını, test/doğrulama setinin ise gerçek dünya dağılımını
@@ -16,14 +16,16 @@ Bu modül aşağıdaki görevleri yerine getirir:
 =============================================================================
 """
 
+import os
 import logging
 from typing import Tuple, Dict, Any
+
+os.environ.setdefault("LOKY_MAX_CPU_COUNT", "4")
 
 import numpy as np
 import pandas as pd
 from sklearn.utils.class_weight import compute_class_weight
 
-# Pylance ve linter uyumlulugu icin dinamik guvenli import
 try:
     from imblearn.under_sampling import RandomUnderSampler  # type: ignore
     from imblearn.over_sampling import SMOTE  # type: ignore
@@ -42,9 +44,6 @@ class ImbalanceAnalyzer:
 
     @staticmethod
     def analyze(y: pd.Series) -> Dict[str, Any]:
-        """
-        Etiket serisi üzerinde dengesizlik metriklerini hesaplar.
-        """
         counts = y.value_counts().to_dict()
         n_maj = counts.get(0, 0)
         n_min = counts.get(1, 0)
@@ -62,7 +61,7 @@ class ImbalanceAnalyzer:
         else:
             severity = "Asiri Ucbirim Dengesizlik (Extreme / Rare Event)"
 
-        analysis_result = {
+        return {
             "total_samples": int(total),
             "majority_count_0": int(n_maj),
             "minority_count_1": int(n_min),
@@ -70,7 +69,6 @@ class ImbalanceAnalyzer:
             "imbalance_ratio_IR": float(np.round(ir, 2)),
             "severity_level": severity
         }
-        return analysis_result
 
 
 class DataLeakageGuard:
@@ -87,11 +85,6 @@ class DataLeakageGuard:
         y_train: pd.Series,
         y_test: pd.Series
     ) -> None:
-        """
-        Train ve Test kümeleri arasında indeks çakışması veya boyut uyumsuzluğu
-        olup olmadığını denetler.
-        """
-        # 1. İndeks kesişimi kontrolü
         train_idx = set(X_train.index)
         test_idx = set(X_test.index)
         intersection = train_idx.intersection(test_idx)
@@ -101,12 +94,11 @@ class DataLeakageGuard:
                 f"[DATA LEAKAGE HATASI] Train ve Test kumesinde {len(intersection)} adet ortak ornek bulundu!"
             )
 
-        # 2. Test kümesindeki azınlık sınıfı varlığı kontrolü
         if (y_test == 1).sum() == 0:
             logger.warning("[UYARI] Test setinde hic fraud (1) ornegi kalmadi! Stratified split kullanildigindan emin olun.")
 
         logger.info(
-            f"[GÜVENLİ] Train-Test ayrımı doğrulandı. Sızıntı tespit edilmedi. "
+            f"[GUVENLI] Train-Test ayrimi dogrulandi. Sizinti tespit edilmedi. "
             f"(Train boyutu: {len(X_train):,}, Test boyutu: {len(X_test):,})"
         )
 
@@ -120,16 +112,6 @@ def apply_sampling_strategy(
 ) -> Tuple[pd.DataFrame, pd.Series]:
     """
     Eğitim veri setine seçilen dengeleme stratejisini uygular.
-
-    Parametreler:
-        X_train (pd.DataFrame): Eğitim özellikleri.
-        y_train (pd.Series): Eğitim hedef değişkeni.
-        method (str): 'none', 'undersample', 'smote'
-        sampling_strategy (float): Hedeflenen azınlık/çoğunluk oranı (örn. 0.1 -> 1:10)
-        random_state (int): Tekrarlanabilirlik seed değeri.
-
-    Dönüş:
-        Tuple[pd.DataFrame, pd.Series]: Dengelenmiş (veya orijinal) X_train, y_train.
     """
     method = method.lower()
     logger.info(f"Dengeleme stratejisi uygulaniyor: '{method.upper()}' (Train Boyutu: {len(X_train):,})")
@@ -142,7 +124,6 @@ def apply_sampling_strategy(
             logger.warning("imblearn yuklu degil, ornekleme yapilamadi.")
             return X_train.copy(), y_train.copy()
 
-        # Rastgele Çoğunluk Alt Örnekleme (Random Undersampling)
         rus = RandomUnderSampler(
             sampling_strategy=sampling_strategy,
             random_state=random_state
@@ -159,7 +140,6 @@ def apply_sampling_strategy(
             logger.warning("imblearn yuklu degil, SMOTE uygulanamadi.")
             return X_train.copy(), y_train.copy()
 
-        # SMOTE: Sentetik Azınlık Aşırı Örnekleme
         n_minority = int((y_train == 1).sum())
         k_neighbors = min(5, max(1, n_minority - 1))
 
@@ -181,9 +161,7 @@ def apply_sampling_strategy(
 
 def get_balanced_class_weights(y_train: pd.Series) -> Dict[int, float]:
     """
-    Scikit-Learn modelleri (Random Forest, Logistic Regression vb.) için
-    sınıf frekansının tersiyle orantılı ağırlıkları hesaplar:
-    w_j = n_samples / (n_classes * n_samples_j)
+    Scikit-Learn modelleri için sınıf frekansının tersiyle orantılı ağırlıkları hesaplar.
     """
     classes = np.unique(y_train)
     weights = compute_class_weight(class_weight="balanced", classes=classes, y=y_train)
@@ -192,15 +170,24 @@ def get_balanced_class_weights(y_train: pd.Series) -> Dict[int, float]:
     return weight_dict
 
 
-def get_scale_pos_weight(y_train: pd.Series) -> float:
+def get_scale_pos_weight(y_train: pd.Series, dampened: bool = True) -> float:
     """
-    LightGBM ve XGBoost algoritmaları için 'scale_pos_weight' parametresi:
-    scale_pos_weight = count(negatif_sinif_0) / count(pozitif_sinif_1)
+    LightGBM ve XGBoost algoritmaları için 'scale_pos_weight' parametresini hesaplar.
+    Not: Uç dengesizlikte (örn. 1:585) ham oranın doğrudan verilmesi GBDT ağaçlarında
+    hessian/gradyan patlamasına yol açıp Precision'ı çökerttiği için karekök sönümlemesi
+    (sqrt(n_neg / n_pos)) ile stabilize edilir.
     """
-    n_neg = (y_train == 0).sum()
-    n_pos = (y_train == 1).sum()
-    if n_pos == 0:
+    n_neg = float((y_train == 0).sum())
+    n_pos = float((y_train == 1).sum())
+    if n_pos <= 0:
         return 1.0
-    spw = float(n_neg / n_pos)
-    logger.info(f"Hesaplanan scale_pos_weight degeri (LightGBM/XGBoost icin): {spw:.2f}")
+    raw_ratio = n_neg / n_pos
+    if dampened and raw_ratio > 25.0:
+        spw = float(np.sqrt(raw_ratio))
+        logger.info(
+            f"Ham dengesizlik orani: {raw_ratio:.2f} -> Stabilize edilmis scale_pos_weight (sqrt): {spw:.2f}"
+        )
+    else:
+        spw = float(raw_ratio)
+        logger.info(f"Hesaplanan scale_pos_weight degeri: {spw:.2f}")
     return spw

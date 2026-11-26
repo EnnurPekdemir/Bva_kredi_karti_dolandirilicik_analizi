@@ -438,8 +438,9 @@ def generate_presentation_pdf(output_pdf_path: str = "Proje4_Kredi_Karti_Dolandi
                 "• ARAYÜZDE (Sayfa 4'te) EKRANA BAKARAK ANLATMA TRİCKLERİ:",
                 "  - Ekranda koca bir Model Karşılaştırma Tablosu var! Hiçbir sayıyı ezberlemene gerek yok, direkt tablodan oku:",
                 "    * Naive Model: Accuracy %99.83 ama TP (Yakalanan Fraud) = 0, FN (Kaçan Fraud) = 10!",
-                "    * LightGBM: TP = 9, FN = 1, FP = 7 (Recall %90, Precision %56.2, AUPRC = 0.506).",
-                "    * XGBoost: TP = 10, FN = 0, FP = 1 (Recall %100, Precision %90.9, F1 = %95.2, AUPRC = 1.000)!"
+                "    * LightGBM: TP = 7, FN = 3, FP = 1 (Recall %70.0, Precision %87.5, F1 = %77.8, AUPRC = 0.7294).",
+                "    * XGBoost: TP = 7, FN = 3, FP = 0 (Recall %70.0, Precision %100.0, F1 = %82.4, AUPRC = 0.9207)!",
+                "    * Random Forest: TP = 6, FN = 4, FP = 0 (Recall %60.0, Precision %100.0, AUPRC = 0.9669)!"
             ],
             bg_color="#f8fafc", border_color="#3b82f6", title_color="#1d4ed8", font_size=7.9, wrap_width=108
         )
@@ -499,9 +500,9 @@ def generate_presentation_pdf(output_pdf_path: str = "Proje4_Kredi_Karti_Dolandi
                 "",
                 "• ARAYÜZDE (Sayfa 5'te) EKRANA BAKARAK ANLATMA TRİCKLERİ:",
                 "  - Ekrandaki 'Araştırma Sorusunun Ampirik Yanıtı' başlığını ve altındaki 3 Trick Kartını oku:",
-                "    * Trick 1 (%10 -> %60 Kritik Eşik): 4 ve 12 fraud varken Recall %60; 25 fraud'a (%60 ölçek) çıkınca Recall %100!",
+                "    * Trick 1 (%10 -> %60 Kritik Eşik): 4 fraud varken Recall %50 (AUPRC 0.8529); %30'da %60; 25 fraud'a (%60 ölçek) çıkınca Recall %70 ve AUPRC 0.9456 (Zirve)!",
                 "    * Trick 2 (Sabit Dengesizlik Baskısı): Veri büyüdükçe 1:587 oranı değişmiyor, her 1 fraud yanında 587 normal işlem (gürültü) geliyor.",
-                "    * Trick 3 (%60 -> %100 Doyum & 4x Süre): %60'tan %100'e geçerken eğitim süresi 0.58 sn'den 2.33 sn'ye (4 katına) çıkıyor ama başarı plato yapıyor!"
+                "    * Trick 3 (%60 -> %100 Doyum & Süre Maliyeti): %10'dan %100'e geçerken eğitim süresi ~2 katına (0.301s -> 0.581s) çıkıyor ama Recall (%70) ve F1 (%82.35) plato yapıyor!"
             ],
             bg_color="#f8fafc", border_color="#3b82f6", title_color="#1d4ed8", font_size=7.9, wrap_width=108
         )
@@ -515,9 +516,9 @@ def generate_presentation_pdf(output_pdf_path: str = "Proje4_Kredi_Karti_Dolandi
                 "Araştırma sorumuz şuydu: 'Çok veri olması, nadir fraud olaylarını bulmayı gerçekten kolaylaştırıyor mu?' Bunu test etmek için eğitim verimizi 1'e 587 dengesizlik oranını koruyarak %10, %30, %60 ve %100 olmak üzere 4 farklı ölçekte eğittim; her ölçekte Eğitim Süresini (Latency) ve Model Performansını (AUPRC ve Recall) ölçtüm.",
                 "",
                 "(Grafik 6'yı ve Alttaki Tabloyu göstererek) Deney sonuçlarımız bize çok net bir bilimsel yanıt vermektedir: Araştırma sorumuzun yanıtı; KISMEN EVET, ANCAK BELİRLİ BİR EŞİKTEN SONRA DOYUMA ULAŞMAKTADIR (Diminishing Returns)!",
-                "1. Birincisi; Kritik Azınlık Hacmi (%10 -> %60): Tabloda görüldüğü gibi %10 ve %30 veri boyutunda model yalnızca 4 ila 12 adet fraud örneği görmektedir. Bu kadar az örnekle karar sınırları tam öğrenilememekte ve Recall %60'ta kalmaktadır. Ancak veri %60 boyutuna (25 fraud işlemine) ulaştığında model örüntüyü yakalamakta ve Recall %100'e sıçramaktadır. Yani kritik bir eşiğe kadar veri artışı işi kolaylaştırmaktadır.",
-                "2. İkincisi; Gürültü ve Yanlış Alarm Baskısı (%60 -> %100): Sadece veri miktarını artırmak 1'e 587 olan dengesizlik oranını iyileştirmemektedir. Sisteme eklenen her 1 yeni fraud işlemine karşılık 587 yeni normal işlem gelmektedir. Çoğunluk sınıfındaki bu devasa artış, sınır bölgelerde yanlış alarmları (False Positive) tetikleyerek AUPRC artışını frenlemektedir.",
-                "3. Üçüncüsü; Eğitim Süresi vs Performans Trade-off'u: Ortadaki ve sağdaki grafikte görüldüğü üzere, %60 ölçeğinden %100 ölçeğine geçildiğinde eğitim süresi 4 katına (0.58 sn'den 2.33 sn'ye) çıkarken, model başarımı plato yapmaktadır. Sonuç olarak; nadir fraud tespitinde sadece daha fazla ham veri yığmak yerine PySpark ile davranışsal özellikler üretmek (Öğrenci 3), doğru sınıf dengeleme yapmak (Öğrenci 2) ve AUPRC odaklı model kurmak (Öğrenci 4) asıl başarıyı getirmektedir. Bizi dinlediğiniz için teşekkür ederiz.\""
+                "1. Birincisi; Kritik Azınlık Hacmi (%10 -> %60): Tabloda görüldüğü gibi %10 veri boyutunda model yalnızca 4 adet fraud örneği görmekte ve Recall %50'de kalmaktadır. Veri %30'a çıktığında Recall %60'a, %60 boyutuna (25 fraud işlemine) ulaştığında ise Recall %70'e ve AUPRC 0.9456 zirvesine sıçramaktadır. Yani kritik bir eşiğe kadar veri artışı işi kolaylaştırmaktadır.",
+                "2. İkincisi; Gürültü ve Yanlış Alarm Baskısı (%60 -> %100): Sadece veri miktarını artırmak 1'e 587 olan dengesizlik oranını iyileştirmemektedir. Sisteme eklenen her 1 yeni fraud işlemine karşılık 587 yeni normal işlem gelmektedir. Çoğunluk sınıfındaki bu devasa artış, sınır bölgelerde gürültü yaratarak AUPRC artışını frenlemektedir.",
+                "3. Üçüncüsü; Eğitim Süresi vs Performans Trade-off'u: Ortadaki ve sağdaki grafikte görüldüğü üzere, veri ölçeği büyüdükçe eğitim süresi sürekli artarken (0.301 sn -> 0.581 sn), %60 ölçeğinden sonra Recall (%70) ve F1 (%82.35) plato yapmaktadır. Sonuç olarak; nadir fraud tespitinde sadece daha fazla ham veri yığmak yerine PySpark ile davranışsal özellikler üretmek (Öğrenci 3), doğru sınıf dengeleme yapmak (Öğrenci 2) ve AUPRC odaklı model kurmak (Öğrenci 4) asıl başarıyı getirmektedir. Bizi dinlediğiniz için teşekkür ederiz.\""
             ],
             bg_color="#eff6ff", border_color="#2563eb", title_color="#1e40af", font_size=7.9, wrap_width=108
         )
@@ -526,8 +527,8 @@ def generate_presentation_pdf(output_pdf_path: str = "Proje4_Kredi_Karti_Dolandi
             ax, 0.03, 0.03, 0.94, 0.14,
             "3. HOCA SORARSA ŞOV YAPACAĞIN CEVAPLAR",
             [
-                "• Hoca: 'Neden %10 ölçekte AUPRC 0.89 iken %30 ölçekte düştü ve sonra tekrar %60'ta yükseldi?' -> Cevap: 'Çok güzel bir soru hocam; %10 ölçekte sadece 4 adet fraud örneği olduğu için model çok dar bir bölgeyi ezberliyor (yüksek varyans). %30'da yeni gelen 7.200 normal işlemle karar sınırı bulanıklaşıyor; ancak %60 ölçeğinde (25 fraud) hem yeterli çeşitlilik sağlandığı hem de PySpark özellikleri devreye girdiği için Recall %100 ile kararlı (stabil) hale geliyor.'",
-                "• Hoca: 'Gerçek bir bankada bu deneyin sonucu nasıl kullanılır?' -> Cevap: 'Milyarlarca satırlık 10 yıllık ham veriyi eğitime sokup sunucu maliyetini 10 katına çıkarmak yerine, son 3-6 aylık optimal penceredeki veriyi PySpark özellikleriyle zenginleştirerek eğitmenin çok daha verimli olduğunu gösterir.'"
+                "• Hoca: 'Neden %60 ölçekten %100 ölçeğe geçince Recall %70'te sabit kaldı?' -> Cevap: 'Çünkü hocam %60 ölçeğinde (25 fraud örneğiyle) model ana dolandırıcılık örüntülerini zaten öğrendi. %100 ölçeğe çıkarken eklenen 9.600 yeni normal işlem, 1:587 dengesizlik oranıyla birlikte sınır bölgedeki belirsizliği artırdığı için marjinal kazanç doyuma (platoya) ulaştı.'",
+                "• Hoca: 'Gerçek bir bankada bu deneyin sonucu nasıl kullanılır?' -> Cevap: 'Milyarlarca satırlık 10 yıllık ham veriyi eğitime sokup sunucu maliyetini katlamak yerine, son 3-6 aylık optimal penceredeki veriyi PySpark özellikleriyle zenginleştirerek eğitmenin çok daha verimli olduğunu gösterir.'"
             ],
             bg_color="#fffbeb", border_color="#f59e0b", title_color="#b45309", font_size=7.8, wrap_width=108
         )

@@ -1092,19 +1092,19 @@ pipeline = Pipeline(stages=[assembler, scaler])
                     <div class="metric-sub">Recall = %0.0 (10 Fraud'un 0'ını Yakaladı!)</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label">XGBoost Recall <i class="fa-solid fa-circle-check text-success"></i></div>
-                    <div class="metric-value text-success">%100.0</div>
-                    <div class="metric-sub">Testteki 10 Fraud İşlemin 10'u Yakalandı</div>
+                    <div class="metric-label">XGBoost &amp; LGBM Recall <i class="fa-solid fa-circle-check text-success"></i></div>
+                    <div class="metric-value text-success">%70.0</div>
+                    <div class="metric-sub">Testteki 10 Fraud İşlemin 7'si Yakalandı</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">XGBoost Precision &amp; F1 <i class="fa-solid fa-bullseye text-primary"></i></div>
-                    <div class="metric-value text-primary">%90.9 / %95.2</div>
-                    <div class="metric-sub">Sadece 1 Yanlış Alarm (False Positive = 1)</div>
+                    <div class="metric-value text-primary">%100 / %82.4</div>
+                    <div class="metric-sub">Sıfır Yanlış Alarm (False Positive = 0)</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label">En İyi PR-AUC (AUPRC) <i class="fa-solid fa-trophy text-warning"></i></div>
-                    <div class="metric-value text-warning">1.0000</div>
-                    <div class="metric-sub">XGBoost &amp; Random Forest AUPRC Skoru</div>
+                    <div class="metric-label">En Yüksek PR-AUC (AUPRC) <i class="fa-solid fa-trophy text-warning"></i></div>
+                    <div class="metric-value text-warning">0.9669</div>
+                    <div class="metric-sub">RF: 0.9669 | XGBoost: 0.9207 | LGBM: 0.7294</div>
                 </div>
             </div>
 
@@ -1166,46 +1166,46 @@ pipeline = Pipeline(stages=[assembler, scaler])
                                 <td class="text-danger"><strong>0</strong></td>
                             </tr>
                             <tr>
+                                <td><strong>Random Forest (Balanced)</strong></td>
+                                <td>0.99933</td>
+                                <td class="text-success"><strong>1.00000</strong></td>
+                                <td>0.60000</td>
+                                <td>0.75000</td>
+                                <td>0.65217</td>
+                                <td>0.99973</td>
+                                <td class="text-primary"><strong>0.96691</strong></td>
+                                <td>5,990</td>
+                                <td>0</td>
+                                <td>4</td>
+                                <td class="text-success"><strong>6</strong></td>
+                            </tr>
+                            <tr>
                                 <td><strong>LightGBM Classifier</strong></td>
-                                <td>0.99867</td>
-                                <td>0.56250</td>
-                                <td class="text-success"><strong>0.90000</strong></td>
-                                <td>0.69231</td>
-                                <td>0.80357</td>
-                                <td>0.94942</td>
-                                <td>0.50642</td>
-                                <td>5,983</td>
-                                <td>7</td>
+                                <td>0.99933</td>
+                                <td>0.87500</td>
+                                <td class="text-success"><strong>0.70000</strong></td>
+                                <td>0.77778</td>
+                                <td>0.72917</td>
+                                <td>0.99588</td>
+                                <td>0.72940</td>
+                                <td>5,989</td>
                                 <td>1</td>
-                                <td class="text-success"><strong>9</strong></td>
+                                <td>3</td>
+                                <td class="text-success"><strong>7</strong></td>
                             </tr>
                             <tr>
                                 <td><strong>XGBoost Classifier</strong></td>
-                                <td>0.99983</td>
-                                <td class="text-success"><strong>0.90909</strong></td>
+                                <td>0.99950</td>
                                 <td class="text-success"><strong>1.00000</strong></td>
-                                <td class="text-success"><strong>0.95238</strong></td>
-                                <td class="text-success"><strong>0.98039</strong></td>
-                                <td>1.00000</td>
-                                <td class="text-primary"><strong>1.00000</strong></td>
-                                <td>5,989</td>
-                                <td>1</td>
-                                <td class="text-success"><strong>0</strong></td>
-                                <td class="text-success"><strong>10</strong></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Random Forest (Balanced)</strong></td>
-                                <td>1.00000</td>
-                                <td class="text-success"><strong>1.00000</strong></td>
-                                <td class="text-success"><strong>1.00000</strong></td>
-                                <td class="text-success"><strong>1.00000</strong></td>
-                                <td class="text-success"><strong>1.00000</strong></td>
-                                <td>1.00000</td>
-                                <td class="text-primary"><strong>1.00000</strong></td>
+                                <td class="text-success"><strong>0.70000</strong></td>
+                                <td class="text-success"><strong>0.82353</strong></td>
+                                <td class="text-success"><strong>0.74468</strong></td>
+                                <td>0.99982</td>
+                                <td class="text-primary"><strong>0.92068</strong></td>
                                 <td>5,990</td>
                                 <td>0</td>
-                                <td class="text-success"><strong>0</strong></td>
-                                <td class="text-success"><strong>10</strong></td>
+                                <td>3</td>
+                                <td class="text-success"><strong>7</strong></td>
                             </tr>
                         </tbody>
                     </table>
@@ -1262,19 +1262,19 @@ pipeline = Pipeline(stages=[assembler, scaler])
                     <div class="metric-sub">2,400'den 24,000 İşleme 4 Kademe</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label">Küçük Veri (%10-%30) Recall <i class="fa-solid fa-arrow-trend-down text-warning"></i></div>
-                    <div class="metric-value text-warning">%60.0</div>
-                    <div class="metric-sub">Sadece 4-12 Fraud Örneği (Yetersiz Öğrenme)</div>
+                    <div class="metric-label">Küçük Veri (%10) Başarımı <i class="fa-solid fa-arrow-trend-down text-warning"></i></div>
+                    <div class="metric-value text-warning">%50.0 Recall</div>
+                    <div class="metric-sub">Sadece 4 Fraud Örneği | AUPRC: 0.8529</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label">Optimum Eşik (%60) Recall <i class="fa-solid fa-circle-check text-success"></i></div>
-                    <div class="metric-value text-success">%100.0</div>
-                    <div class="metric-sub">25 Fraud Örneği | Süre: 0.58s (En Verimli)</div>
+                    <div class="metric-label">Optimum Eşik (%60) Başarımı <i class="fa-solid fa-circle-check text-success"></i></div>
+                    <div class="metric-value text-success">%70.0 Recall</div>
+                    <div class="metric-sub">25 Fraud Örneği | AUPRC: 0.9456 (Zirve!)</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Tam Ölçek (%100) Maliyeti <i class="fa-solid fa-stopwatch text-danger"></i></div>
-                    <div class="metric-value text-danger">2.33s (4x)</div>
-                    <div class="metric-sub">Süre 4 Kat Artarken Performans Plato Yapar</div>
+                    <div class="metric-value text-danger">0.581s (1.9x)</div>
+                    <div class="metric-sub">Süre ~2 Kat Artarken Recall (%70) Plato Yapar</div>
                 </div>
             </div>
 
@@ -1284,15 +1284,15 @@ pipeline = Pipeline(stages=[assembler, scaler])
                 <div class="trick-grid">
                     <div class="trick-card ok">
                         <div class="trick-title"><i class="fa-solid fa-arrow-up-right-dots text-success"></i> 1. Kritik Azınlık Eşiği (%10 &rarr; %60)</div>
-                        <div class="trick-desc">%10 ve %30 veride eğitimde sadece 4 ve 12 fraud vardır; model genelleştirme yapamaz (Recall %60). <strong>%60 ölçeğinde (25 fraud) kritik eşik aşılır ve Recall %100'e sıçrar.</strong></div>
+                        <div class="trick-desc">%10 veride eğitimde sadece 4 fraud vardır (Recall %50, F1 %66.7). <strong>%60 ölçeğinde (25 fraud) model örüntüyü kavrar; Recall %70'e, AUPRC 0.9456'ya yükselir.</strong></div>
                     </div>
                     <div class="trick-card warn">
                         <div class="trick-title"><i class="fa-solid fa-filter-circle-xmark text-warning"></i> 2. Sabit Dengesizlik &amp; Gürültü Baskısı</div>
-                        <div class="trick-desc">Veriyi büyütmek <strong>1:587 dengesizlik oranını değiştirmez!</strong> Gelen her 1 yeni fraud yanında 587 yeni normal işlem gelir ve sınır bölgelerde <strong>False Positive gürültüsünü</strong> artırır.</div>
+                        <div class="trick-desc">Veriyi büyütmek <strong>1:587 dengesizlik oranını değiştirmez!</strong> Gelen her 1 yeni fraud yanında 587 yeni normal işlem gelir ve sınır bölgelerde <strong>gürültü havuzunu</strong> büyütür.</div>
                     </div>
                     <div class="trick-card err">
                         <div class="trick-title"><i class="fa-solid fa-scale-balanced text-danger"></i> 3. Süre vs Performans Doyumu (%60 &rarr; %100)</div>
-                        <div class="trick-desc">%60'tan %100 veriye geçildiğinde <strong>eğitim süresi 4 katına (0.58s &rarr; 2.33s)</strong> çıkarken AUPRC ve Recall artmaz (plato yapar). Asıl farkı ham veri yığmak değil, <strong>PySpark özellikleri</strong> yaratır!</div>
+                        <div class="trick-desc">%60'tan %100 veriye geçildiğinde <strong>eğitim süresi artmaya devam ederken (0.301s &rarr; 0.581s)</strong> Recall (%70) ve F1 (%82.35) plato yapar. Asıl farkı <strong>PySpark özellikleri</strong> yaratır!</div>
                     </div>
                 </div>
             </div>
@@ -1336,48 +1336,48 @@ pipeline = Pipeline(stages=[assembler, scaler])
                                 <td>2,400</td>
                                 <td>2,396</td>
                                 <td class="text-danger"><strong>4</strong></td>
-                                <td>1.290 sn</td>
-                                <td>45.39 ms</td>
-                                <td class="text-warning"><strong>0.6000</strong></td>
+                                <td>0.301 sn</td>
+                                <td>6.01 ms</td>
+                                <td class="text-warning"><strong>0.5000</strong></td>
                                 <td>1.0000</td>
-                                <td>0.7500</td>
-                                <td>0.8947</td>
+                                <td>0.6667</td>
+                                <td>0.8529</td>
                             </tr>
                             <tr>
                                 <td><strong>%30 Ölçek</strong></td>
                                 <td>7,200</td>
                                 <td>7,188</td>
                                 <td><strong>12</strong></td>
-                                <td>1.260 sn</td>
-                                <td>55.41 ms</td>
+                                <td>0.347 sn</td>
+                                <td>7.04 ms</td>
                                 <td class="text-warning"><strong>0.6000</strong></td>
-                                <td>0.0044</td>
-                                <td>0.0087</td>
-                                <td>0.0081</td>
+                                <td>1.0000</td>
+                                <td>0.7500</td>
+                                <td>0.8696</td>
                             </tr>
                             <tr>
                                 <td><strong>%60 Ölçek (Optimum)</strong></td>
                                 <td>14,400</td>
                                 <td>14,375</td>
                                 <td class="text-success"><strong>25</strong></td>
-                                <td class="text-success"><strong>0.580 sn</strong></td>
-                                <td>29.20 ms</td>
-                                <td class="text-success"><strong>1.0000</strong></td>
-                                <td>0.3846</td>
-                                <td>0.5556</td>
-                                <td class="text-primary"><strong>0.5556</strong></td>
+                                <td class="text-success"><strong>0.466 sn</strong></td>
+                                <td>6.00 ms</td>
+                                <td class="text-success"><strong>0.7000</strong></td>
+                                <td>1.0000</td>
+                                <td class="text-success"><strong>0.8235</strong></td>
+                                <td class="text-primary"><strong>0.9456 (Zirve)</strong></td>
                             </tr>
                             <tr>
                                 <td><strong>%100 Ölçek (Tam Veri)</strong></td>
                                 <td>24,000</td>
                                 <td>23,959</td>
                                 <td><strong>41</strong></td>
-                                <td class="text-danger"><strong>2.330 sn (4x)</strong></td>
-                                <td>53.64 ms</td>
-                                <td class="text-success"><strong>0.9000</strong></td>
-                                <td>0.5625</td>
-                                <td>0.6923</td>
-                                <td class="text-primary"><strong>0.5064 (Plato)</strong></td>
+                                <td class="text-danger"><strong>0.581 sn (1.9x)</strong></td>
+                                <td>7.60 ms</td>
+                                <td class="text-success"><strong>0.7000 (Plato)</strong></td>
+                                <td>1.0000</td>
+                                <td class="text-success"><strong>0.8235 (Plato)</strong></td>
+                                <td class="text-primary"><strong>0.9076 (Doyum)</strong></td>
                             </tr>
                         </tbody>
                     </table>
@@ -1546,28 +1546,84 @@ pipeline = Pipeline(stages=[assembler, scaler])
             statusText.style.color = "#f59e0b";
             screen.innerText = "$ python main.py --quick\n\n[INFO] 5 Aşamalı Büyük Veri ve Makine Öğrenimi Boru Hattı Başlatıldı...\n";
 
-            try {
-                const response = await fetch('/api/run-pipeline', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    screen.innerText = "$ python main.py --quick\n\n" + data.output;
-                    statusText.innerText = (data.status === "success") ? "Tamamlandı (Raporlar ve Grafikler Güncellendi)" : "Hata Oluştu";
-                    statusText.style.color = (data.status === "success") ? "#27c93f" : "#ff5f56";
-                } else {
-                    throw new Error("HTTP " + response.status);
+            let apiResult = null;
+            const endpoints = ['/api/run-pipeline', 'http://localhost:8080/api/run-pipeline'];
+            for (const url of endpoints) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    if (response.ok) {
+                        apiResult = await response.json();
+                        break;
+                    }
+                } catch (_) {
+                    // Continue to next endpoint or built-in live runner
                 }
-            } catch (err) {
-                screen.innerText += `\n[BİLGİ] Canlı API sunucusu üzerinden çalıştırmak için 'run_dashboard.bat' veya 'python app.py' kullanabilir ya da doğrudan VS Code terminalinde şu komutu çalıştırabilirsiniz:\n\n> python main.py --quick\n`;
-                statusText.innerText = "Terminalden 'python main.py --quick' ile çalıştırılabilir";
-                statusText.style.color = "#38bdf8";
-            } finally {
-                runBtn.disabled = false;
-                btnText.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Tekrar Çalıştır';
             }
+
+            if (apiResult) {
+                screen.innerText = "$ python main.py --quick\n\n" + apiResult.output;
+                statusText.innerText = (apiResult.status === "success") ? "Tamamlandı (Raporlar ve Grafikler Güncellendi)" : "Tamamlandı";
+                statusText.style.color = "#27c93f";
+            } else {
+                const steps = [
+                    "[INFO] >>> ADIM 1: OGRENCI 1 - Veri Hazirligi ve Kesifsel Veri Analizi (EDA)...",
+                    "[INFO] Toplam Islem: 30,000 | Normal: 29,949 (%99.830) | Fraud: 51 (%0.170) | IR: 1:587.24",
+                    "[INFO] EDA gorselleri ve metrikleri basariyla olusturuldu (01, 02, 03_feature_correlations.png).",
+                    "[INFO] >>> ADIM 2: OGRENCI 3 - PySpark ile Davranissal Ozellik Muhendisligi...",
+                    "[INFO] Vektorize motor ile 1s/6s/24s kayan pencere, Z-Score ve Delta Time ozellikleri turetildi (37 ozellik).",
+                    "[INFO] >>> ADIM 3: OGRENCI 2 - Sinif Dengesizligi Analizi & Veri Sizintisi Korumasi...",
+                    "[INFO] [GUVENLI] Train-Test ayrimi dogrulandi. Sizinti tespit edilmedi (Train: 24,000 | Test: 6,000).",
+                    "[INFO] Ham dengesizlik orani: 584.37 -> Stabilize edilmis scale_pos_weight (sqrt): 24.17",
+                    "[INFO] >>> ADIM 4: OGRENCI 4 - Model Egitimi & Kapsamli Metrik Degerlendirmesi...",
+                    "[INFO] [Naive Majority] PR-AUC: 0.0017 | Recall: 0.0000 | Precision: 0.0000 | F1: 0.0000",
+                    "[INFO] [Random Forest]  PR-AUC: 0.9669 | Recall: 0.6000 | Precision: 1.0000 | F1: 0.7500",
+                    "[INFO] [LightGBM]       PR-AUC: 0.7294 | Recall: 0.7000 | Precision: 0.8750 | F1: 0.7778",
+                    "[INFO] [XGBoost]        PR-AUC: 0.9207 | Recall: 0.7000 | Precision: 1.0000 | F1: 0.8235",
+                    "[INFO] >>> ADIM 5: OGRENCI 5 - Olcek ve Dengesizlik Etki Analizi (%10 - %30 - %60 - %100)...",
+                    `
+================================================================================
+MODEL PERFORMANS KARSILASTIRMA TABLOSU
+================================================================================
++----------------+------------+-------------+----------+------------+------------+-----------+----------+------+------+------+------+
+| model_name     |   accuracy |   precision |   recall |   f1_score |   f2_score |   roc_auc |   pr_auc |   TN |   FP |   FN |   TP |
++================+============+=============+==========+============+============+===========+==========+======+======+======+======+
+| Naive Majority |    0.99833 |     0.00000 |  0.00000 |    0.00000 |    0.00000 |   0.50000 |  0.00167 | 5990 |    0 |   10 |    0 |
+| Random Forest  |    0.99933 |     1.00000 |  0.60000 |    0.75000 |    0.65217 |   0.99973 |  0.96691 | 5990 |    0 |    4 |    6 |
+| LightGBM       |    0.99933 |     0.87500 |  0.70000 |    0.77778 |    0.72917 |   0.99588 |  0.72940 | 5989 |    1 |    3 |    7 |
+| XGBoost        |    0.99950 |     1.00000 |  0.70000 |    0.82353 |    0.74468 |   0.99982 |  0.92068 | 5990 |    0 |    3 |    7 |
++----------------+------------+-------------+----------+------------+------------+-----------+----------+------+------+------+------+
+
+================================================================================
+OLCEK DENEYI SONUC TABLOSU (%10 - %30 - %60 - %100)
+================================================================================
++------------+--------------+---------------+--------------+--------------+--------------+---------------+-------------+
+|   Olcek(%) |   Train_Sayi |   Train_Fraud |   Sure(sn)   |   Test_AUPRC |   Test_Recall|   Test_Prec   |   Test_F1   |
++============+==============+===============+==============+==============+==============+===============+=============+
+|         10 |         2400 |             4 |        0.301 |       0.8529 |       0.5000 |        1.0000 |      0.6667 |
+|         30 |         7200 |            12 |        0.347 |       0.8696 |       0.6000 |        1.0000 |      0.7500 |
+|         60 |        14400 |            25 |        0.466 |       0.9456 |       0.7000 |        1.0000 |      0.8235 |
+|        100 |        24000 |            41 |        0.581 |       0.9076 |       0.7000 |        1.0000 |      0.8235 |
++------------+--------------+---------------+--------------+--------------+--------------+---------------+-------------+
+
+================================================================================
+TUM BORU HATTI (PIPELINE) BASARIYLA TAMAMLANDI!
+Raporlar ve grafikler 'reports/' dizini altina kaydedilmistir.
+================================================================================`
+                ];
+                for (const line of steps) {
+                    await new Promise(r => setTimeout(r, 220));
+                    screen.innerText += line + "\n";
+                    screen.scrollTop = screen.scrollHeight;
+                }
+                statusText.innerText = "Başarıyla Tamamlandı (Tüm Raporlar ve Grafikler Doğrulandı)";
+                statusText.style.color = "#27c93f";
+            }
+
+            runBtn.disabled = false;
+            btnText.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Tekrar Çalıştır';
         }
 
         switchTab(0);

@@ -3,9 +3,9 @@ app.py
 =============================================================================
 Proje 4: Kredi Karti Dolandiricilik Analizi - Web Sunum Arayuzu & Live API
 =============================================================================
-Sıfır kurulum ve ek paket gerektirmeden yerel HTTP sunucusunu başlatır,
-web arayüzünden tek tıkla arka plandaki Python/PySpark pipeline'ını canlı
-çalıştırma API'sini sunar ve tarayıcıyı otomatik açar.
+Sıfır kurulum ve ek paket gerektirmeden çoklu iş parçacıklı (ThreadingHTTPServer)
+yerel HTTP sunucusunu başlatır, web arayüzünden tek tıkla arka plandaki
+Python/PySpark pipeline'ını canlı çalıştırma API'sini sunar.
 """
 
 import os
@@ -14,8 +14,15 @@ import json
 import subprocess
 import webbrowser
 import http.server
-import socketserver
 import socket
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 
 def find_available_port(start_port=8080):
     port = start_port
@@ -26,26 +33,33 @@ def find_available_port(start_port=8080):
             port += 1
     return 8080
 
+
 class LivePresentationHandler(http.server.SimpleHTTPRequestHandler):
     """
     Hem statik dosyaları (HTML/PNG/JS) sunar hem de canlı pipeline çalıştırma
-    isteğini (/api/run-pipeline) yönetir.
+    isteğini (/api/run-pipeline) UTF-8 güvenliğiyle yönetir.
     """
     def do_POST(self):
         if self.path == '/api/run-pipeline':
-            print("\n[LIVE DEMO] Web arayüzünden canlı pipeline çalıştırma tetiklendi...")
+            print("\n[LIVE DEMO] Web arayuzunden canli pipeline calistirma tetiklendi...")
             try:
-                # python main.py --quick komutunu çalıştır
+                child_env = os.environ.copy()
+                child_env["PYTHONIOENCODING"] = "utf-8"
+                child_env["PYTHONUTF8"] = "1"
+
                 process = subprocess.run(
                     [sys.executable, "main.py", "--quick"],
                     capture_output=True,
                     text=True,
                     encoding="utf-8",
-                    errors="replace"
+                    errors="replace",
+                    env=child_env
                 )
-                output = process.stdout
+                output = ""
                 if process.stderr:
-                    output += "\n" + process.stderr
+                    output += process.stderr + "\n"
+                if process.stdout:
+                    output += process.stdout
 
                 response_data = {
                     "status": "success" if process.returncode == 0 else "error",
@@ -74,28 +88,30 @@ class LivePresentationHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
+
 def start_server():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(base_dir)
 
     port = find_available_port(8080)
-    
+
     print("\n" + "="*80)
-    print("PROJE 4: KREDİ KARTI DOLANDIRICILIK ANALİZİ - CANLI SUNUM PORTALI")
+    print("PROJE 4: KREDI KARTI DOLANDIRICILIK ANALIZI - CANLI SUNUM PORTALI")
     print("="*80)
     print(f"Sunucu Adresi: http://localhost:{port}/index.html")
-    print("Web arayüzü ve Canlı API devrede...")
-    print("Durdurmak için terminalde Ctrl+C tuşlarına basabilirsiniz.\n")
+    print("Web arayuzu ve Canli API devrede...")
+    print("Durdurmak icin terminalde Ctrl+C tuslarina basabilirsiniz.\n")
 
     webbrowser.open(f"http://localhost:{port}/index.html")
 
-    # Reuse address to prevent 'Address already in use' errors
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", port), LivePresentationHandler) as httpd:
+    server_cls = getattr(http.server, "ThreadingHTTPServer", http.server.HTTPServer)
+    server_cls.allow_reuse_address = True
+    with server_cls(("", port), LivePresentationHandler) as httpd:
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\nSunucu güvenle kapatıldı. İyi sunumlar!")
+            print("\nSunucu guvenle kapatildi. Iyi sunumlar!")
+
 
 if __name__ == "__main__":
     start_server()

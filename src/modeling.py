@@ -5,13 +5,11 @@ src/modeling.py
 
 Bu modül aşağıdaki görevleri yerine getirir:
 1. Sektör standardı modelleri eğitir:
-   - LightGBM Classifier (scale_pos_weight destekli)
-   - XGBoost Classifier (scale_pos_weight destekli)
-   - Random Forest Classifier (class_weight='balanced')
+   - LightGBM Classifier (stabilize edilmiş scale_pos_weight destekli)
+   - XGBoost Classifier (max_delta_step ve scale_pos_weight destekli)
+   - Random Forest Classifier (class_weight='balanced_subsample')
    - Naive Baseline Classifier ("Her işleme Normal/0 de")
-2. Doğruluk Paradoksunu (Accuracy Paradox) sayısal ve görsel olarak kanıtlar:
-   - %99.82 doğruluk alan Naive modelin tek bir dolandırıcılığı bile
-     yakalayamadığını (Recall = 0.0) göstererek finansal risk analizini açıklar.
+2. Doğruluk Paradoksunu (Accuracy Paradox) sayısal ve görsel olarak kanıtlar.
 3. Finansal dolandırıcılık için hayati metrikleri hesaplar:
    - Precision, Recall, F1-Score, F2-Score, PR-AUC (AUPRC), ROC-AUC
 4. Confusion Matrix ve Precision-Recall Eğrisi görselleştirme fonksiyonlarını sunar.
@@ -84,7 +82,6 @@ def evaluate_predictions(
     f1 = f1_score(y_true, y_pred, zero_division=0)
     f2 = fbeta_score(y_true, y_pred, beta=2.0, zero_division=0)
 
-    # Olasılık bazlı metrikler
     if y_prob is not None:
         try:
             roc_auc = roc_auc_score(y_true, y_prob)
@@ -101,7 +98,7 @@ def evaluate_predictions(
     cm = confusion_matrix(y_true, y_pred)
     tn, fp, fn, tp = cm.ravel() if cm.shape == (2, 2) else (cm[0, 0], 0, 0, 0)
 
-    metrics = {
+    return {
         "model_name": model_name,
         "accuracy": float(np.round(acc, 5)),
         "precision": float(np.round(prec, 5)),
@@ -115,14 +112,13 @@ def evaluate_predictions(
         "false_negatives": int(fn),
         "true_positives": int(tp)
     }
-    return metrics
 
 
 def demonstrate_accuracy_paradox(
     y_test: np.ndarray,
     y_pred_naive: np.ndarray,
     y_pred_trained: np.ndarray,
-    trained_model_name: str = "LightGBM"
+    trained_model_name: str = "XGBoost"
 ) -> Dict[str, Any]:
     """
     Doğruluk Paradoksunun (Accuracy Paradox) nedenini ve finansal etkisini
@@ -143,7 +139,7 @@ def demonstrate_accuracy_paradox(
             f"Kacirilan Fraud={naive_metrics['false_negatives']}) sozde yuksek dogruluk "
             f"(Accuracy=%{naive_metrics['accuracy']*100:.2f}) gostermektedir. "
             f"Buna karsilik {trained_model_name} modeli, dolandiriciliklarin %{trained_metrics['recall']*100:.1f}'ini "
-            f"basariyla yakalamistir. Bu durum finansal dolandiricilikta Accuracy metriğinin kesinlikle TEK BASINA "
+            f"basariyla yakalamistir. Bu durum finansal dolandiricilikta Accuracy metriginin kesinlikle TEK BASINA "
             f"kullanilamayacagini, PR-AUC ve Recall'un kritik oldugunu ispatlar."
         )
     }
@@ -165,18 +161,26 @@ def train_and_evaluate_models(
     """
     Birden fazla modeli eğitir, metriklerini hesaplar ve tahmin olasılıklarını toplar.
     """
-    models = {
+    models: Dict[str, Any] = {
         "Naive Majority": NaiveMajorityClassifier(),
         "Random Forest": RandomForestClassifier(
-            n_estimators=100,
-            max_depth=12,
-            class_weight="balanced",
+            n_estimators=120,
+            max_depth=10,
+            min_samples_leaf=2,
+            class_weight="balanced_subsample",
             n_jobs=-1,
             random_state=random_state
         ),
         "LightGBM": lgb.LGBMClassifier(
             n_estimators=150,
             learning_rate=0.05,
+            num_leaves=31,
+            max_depth=6,
+            min_child_samples=20,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            reg_alpha=0.1,
+            reg_lambda=1.0,
             scale_pos_weight=scale_pos_weight,
             random_state=random_state,
             n_jobs=-1,
@@ -186,6 +190,10 @@ def train_and_evaluate_models(
             n_estimators=150,
             learning_rate=0.05,
             max_depth=6,
+            max_delta_step=2,
+            subsample=0.85,
+            colsample_bytree=0.85,
+            reg_lambda=1.0,
             scale_pos_weight=scale_pos_weight,
             eval_metric="logloss",
             random_state=random_state,
@@ -194,7 +202,7 @@ def train_and_evaluate_models(
     }
 
     results = []
-    probabilities = {}
+    probabilities: Dict[str, np.ndarray] = {}
 
     for name, model in models.items():
         logger.info(f"Model egitiliyor: {name}...")
@@ -207,7 +215,7 @@ def train_and_evaluate_models(
             y_prob = y_pred.astype(float)
 
         probabilities[name] = y_prob
-        met = evaluate_predictions(y_test, y_pred, y_prob, model_name=name)
+        met = evaluate_predictions(y_test.values, y_pred, y_prob, model_name=name)
         results.append(met)
         logger.info(f"[{name}] PR-AUC: {met['pr_auc']:.4f} | Recall: {met['recall']:.4f} | Precision: {met['precision']:.4f} | F1: {met['f1_score']:.4f}")
 
@@ -255,11 +263,9 @@ def plot_pr_and_roc_curves(
 ) -> None:
     """
     Tüm modellerin Precision-Recall (PR) ve ROC Eğrilerini yan yana çizer.
-    Dengesiz veri setlerinde PR eğrisinin ayırt edici gücünü vurgular.
     """
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
-    # Sol Grafik: Precision-Recall Curve (Asıl odak)
     baseline_pr = (y_test == 1).sum() / len(y_test)
     axes[0].plot([0, 1], [baseline_pr, baseline_pr], linestyle="--", color="gray", label=f"Rastgele Taban (AP = {baseline_pr:.4f})")
 
@@ -268,9 +274,9 @@ def plot_pr_and_roc_curves(
             continue
         prec, rec, _ = precision_recall_curve(y_test, y_prob)
         ap = average_precision_score(y_test, y_prob)
-        axes[0].plot(rec, prec, lw=2, label=f"{name} (AUPRC = {ap:.4f})")
+        axes[0].plot(rec, prec, lw=2.2, label=f"{name} (AUPRC = {ap:.4f})")
 
-    axes[0].set_title("Precision-Recall Egrisi (AUPRC - Asıl Odak Metriği)", fontsize=12, fontweight="bold")
+    axes[0].set_title("Precision-Recall Egrisi (AUPRC - Asil Odak Metrigi)", fontsize=12, fontweight="bold")
     axes[0].set_xlabel("Recall (Duyarlilik / Yakalama Orani)")
     axes[0].set_ylabel("Precision (Hassasiyet)")
     axes[0].set_ylim([-0.05, 1.05])
@@ -278,14 +284,13 @@ def plot_pr_and_roc_curves(
     axes[0].grid(True, alpha=0.3)
     axes[0].legend(loc="lower left")
 
-    # Sağ Grafik: ROC Curve (Alışılagelmiş ama dengesizlikte aldatıcı olabilen metrik)
     axes[1].plot([0, 1], [0, 1], linestyle="--", color="gray", label="Rastgele (AUC = 0.5000)")
     for name, y_prob in probabilities.items():
         if name == "Naive Majority":
             continue
         fpr, tpr, _ = roc_curve(y_test, y_prob)
         auc = roc_auc_score(y_test, y_prob)
-        axes[1].plot(fpr, tpr, lw=2, label=f"{name} (ROC-AUC = {auc:.4f})")
+        axes[1].plot(fpr, tpr, lw=2.2, label=f"{name} (ROC-AUC = {auc:.4f})")
 
     axes[1].set_title("ROC Egrisi (Receiver Operating Characteristic)", fontsize=12, fontweight="bold")
     axes[1].set_xlabel("False Positive Rate (1 - Ozgulluk)")

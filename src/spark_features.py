@@ -15,7 +15,6 @@ Bu modül aşağıdaki görevleri yerine getirir:
 """
 
 import os
-import shutil
 import logging
 from typing import Tuple, List, Optional, Any
 
@@ -25,7 +24,6 @@ import pandas as pd
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("SparkFeatures")
 
-# PySpark bağımlılıklarını dinamik ve güvenli şekilde kontrol et
 HAS_SPARK = False
 try:
     from pyspark.sql import SparkSession, Window  # type: ignore
@@ -42,18 +40,14 @@ except ImportError:
 def get_spark_session(app_name: str = "CreditCardFraudFeatureEngineering") -> Optional[Any]:
     """
     Yerel modda optimize edilmiş PySpark oturumu oluşturur veya mevcut oturumu döndürür.
-    Sandbox veya yerel socket kısıtlamalı ortamlarda kilitlenmeyi önlemek için varsayılan olarak
-    vektörize edilmiş yüksek hızlı fallback motorunu devreye alır.
-    Kullanıcı 'USE_PYSPARK=true' çevre değişkeni ile açıkça Spark cluster oturumu başlatabilir.
     """
     if not HAS_SPARK:
         return None
 
     if os.environ.get("USE_PYSPARK", "0").lower() not in ["1", "true", "yes"]:
-        logger.info("PySpark mimarisi hazir; yerel ortamda yuksek hizli vektörize motor kullaniliyor (Aktif etmek icin: USE_PYSPARK=1).")
+        logger.info("PySpark mimarisi hazir; yerel ortamda yuksek hizli vektorize motor kullaniliyor (Aktif etmek icin: USE_PYSPARK=1).")
         return None
 
-    # Java ve socket denetimi
     if "JAVA_HOME" not in os.environ:
         logger.warning("JAVA_HOME tanimli degil. Spark JVM baslatilamiyor, vectorized motor kullanilacak.")
         return None
@@ -83,15 +77,6 @@ def engineer_features_spark(
     """
     PySpark Window fonksiyonları kullanarak müşteri ve zaman bazlı
     davranışsal özellikleri (Behavioral Transaction Features) türetir.
-
-    Türetilen Özellikler:
-    - tx_count_last_1h: Müşterinin son 1 saatteki işlem sayısı
-    - tx_count_last_6h: Müşterinin son 6 saatteki işlem sayısı
-    - tx_count_last_24h: Müşterinin son 24 saatteki işlem sayısı
-    - customer_avg_amount: Müşterinin geçmiş ortalama işlem tutarı
-    - amount_deviation: Güncel işlem tutarının müşterinin ortalamasından mutlak farkı
-    - amount_zscore: Tutarın müşteriye özel z-skoru (standart sapma normalize)
-    - delta_time_sec: Müşterinin bir önceki işleminden bu yana geçen süre (saniye)
     """
     if HAS_SPARK and spark_session is not None:
         try:
@@ -99,7 +84,6 @@ def engineer_features_spark(
         except Exception as e:
             logger.warning(f"PySpark feature engineering sirasinda hata ({e}). Pandas fallback'e geciliyor...")
 
-    # PySpark bulunamadığında veya hata verdiğinde çalışan matematiksel olarak özdeş Pandas motoru
     return _engineer_features_with_pandas(df_spark_or_pandas)
 
 
@@ -117,40 +101,14 @@ def _engineer_features_with_spark(
     else:
         df_spark = df_input
 
-    # Time sütununu long'a dönüştür (Window aralıkları için saniye cinsinden)
     df_spark = df_spark.withColumn("Time_sec", F.col("Time").cast(LongType()))
 
-    # 1. Rolling Window Tanımları (Son 1s=3600sn, 6s=21600sn, 24s=86400sn)
-    w_1h = (
-        Window.partitionBy("customer_id")
-        .orderBy("Time_sec")
-        .rangeBetween(-3600, 0)
-    )
-    w_6h = (
-        Window.partitionBy("customer_id")
-        .orderBy("Time_sec")
-        .rangeBetween(-21600, 0)
-    )
-    w_24h = (
-        Window.partitionBy("customer_id")
-        .orderBy("Time_sec")
-        .rangeBetween(-86400, 0)
-    )
+    w_1h = Window.partitionBy("customer_id").orderBy("Time_sec").rangeBetween(-3600, 0)
+    w_6h = Window.partitionBy("customer_id").orderBy("Time_sec").rangeBetween(-21600, 0)
+    w_24h = Window.partitionBy("customer_id").orderBy("Time_sec").rangeBetween(-86400, 0)
+    w_customer_hist = Window.partitionBy("customer_id").orderBy("Time_sec").rowsBetween(Window.unboundedPreceding, 0)
+    w_lag = Window.partitionBy("customer_id").orderBy("Time_sec")
 
-    # 2. Müşterinin Tüm Geçmiş İşlemleri Penceresi (Kümülatif Ortalama ve Std)
-    w_customer_hist = (
-        Window.partitionBy("customer_id")
-        .orderBy("Time_sec")
-        .rowsBetween(Window.unboundedPreceding, 0)
-    )
-
-    # 3. Önceki İşlem (Lag) Penceresi
-    w_lag = (
-        Window.partitionBy("customer_id")
-        .orderBy("Time_sec")
-    )
-
-    # Özellikleri hesapla
     df_featured = (
         df_spark
         .withColumn("tx_count_last_1h", F.count("Amount").over(w_1h))
@@ -181,9 +139,9 @@ def _engineer_features_with_spark(
 
 def _engineer_features_with_pandas(df_input: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
     """
-    Pandas ortamında PySpark pencereleme hesaplamalarını yüksek hızlı vektörize eden eşdeğer motor.
+    Pandas ortamında PySpark pencereleme hesaplamalarını C seviyesinde vektörize eden eşdeğer motor.
     """
-    logger.info("Vektörize motor ile musteri/zaman ozellik muhendisligi uygulaniyor...")
+    logger.info("Vektorize motor ile musteri/zaman ozellik muhendisligi uygulaniyor...")
     df = df_input.copy()
     if not isinstance(df, pd.DataFrame):
         df = df.toPandas()
@@ -195,31 +153,29 @@ def _engineer_features_with_pandas(df_input: pd.DataFrame) -> Tuple[pd.DataFrame
     df["delta_time_sec"] = (df["Time"] - df["prev_time"]).fillna(86400.0)
     df.drop(columns=["prev_time"], inplace=True)
 
-    # 2. Müşteri bazlı kümülatif ortalama ve sapma (O(N) vektörize cumsum / cumcount)
+    # 2. Müşteri bazlı kümülatif ortalama ve sapma (Tamamen C-vektörize cumsum / cumcount)
     cust_cumsum = df.groupby("customer_id")["Amount"].cumsum()
     cust_cumcount = df.groupby("customer_id").cumcount() + 1
     df["customer_avg_amount"] = cust_cumsum / cust_cumcount
 
-    # Kümülatif varyans / standart sapma yaklaşımı
-    cust_cumsum_sq = df.groupby("customer_id")["Amount"].transform(lambda s: (s**2).cumsum())
+    df["_amount_sq"] = df["Amount"] ** 2
+    cust_cumsum_sq = df.groupby("customer_id")["_amount_sq"].cumsum()
     variance = (cust_cumsum_sq / cust_cumcount) - (df["customer_avg_amount"] ** 2)
     df["customer_std_amount"] = np.sqrt(np.maximum(variance, 0.0)) + 1.0
 
     df["amount_deviation"] = df["Amount"] - df["customer_avg_amount"]
     df["amount_zscore"] = df["amount_deviation"] / (df["customer_std_amount"] + 1e-5)
-    df.drop(columns=["customer_std_amount"], inplace=True)
+    df.drop(columns=["_amount_sq", "customer_std_amount"], inplace=True)
 
     # 3. Son 1, 6 ve 24 saatteki işlem sayıları (Rolling Time Window)
     times = df["Time"].values
     cust_ids = df["customer_id"].values
-    
-    # Hızlı searchsorted ile pencereleri bul
+
     n = len(df)
     counts_1h = np.ones(n, dtype=int)
     counts_6h = np.ones(n, dtype=int)
     counts_24h = np.ones(n, dtype=int)
 
-    # Müşteri değişim indekslerini bul
     cust_change_indices = np.concatenate([[0], np.where(cust_ids[:-1] != cust_ids[1:])[0] + 1, [n]])
 
     for i in range(len(cust_change_indices) - 1):
@@ -240,7 +196,6 @@ def _engineer_features_with_pandas(df_input: pd.DataFrame) -> Tuple[pd.DataFrame
     df["tx_count_last_6h"] = counts_6h
     df["tx_count_last_24h"] = counts_24h
 
-    # Zamana göre tekrar sırala
     df = df.sort_values(by="Time").reset_index(drop=True)
 
     new_feature_names = [

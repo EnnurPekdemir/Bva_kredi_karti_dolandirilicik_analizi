@@ -35,60 +35,53 @@ def generate_synthetic_credit_card_data(
 ) -> pd.DataFrame:
     """
     Kaggle 'Credit Card Fraud Detection' formatına ve istatistiksel dağılımına
-    birebir uygun büyük ölçekli sentetik veri seti üretir.
-
-    Parametreler:
-        n_samples (int): Üretilecek toplam işlem sayısı.
-        fraud_ratio (float): Dolandırıcılık işlem oranı (varsayılan: ~%0.172).
-        n_customers (int): İşlem yapan simüle edilmiş müşteri sayısı.
-        random_state (int): Tekrarlanabilirlik tohumu (seed).
-
-    Dönüş:
-        pd.DataFrame: [Time, V1..V28, Amount, Class, customer_id] sütunlarını içeren DataFrame.
+    birebir uygun, gerçekçi zorluk derecesine sahip büyük ölçekli veri seti üretir.
     """
     logger.info(f"Sentetik veri seti uretiliyor... (Toplam: {n_samples:,}, Fraud Orani: %{fraud_ratio*100:.3f})")
     rng = np.random.RandomState(random_state)
 
-    n_fraud = int(n_samples * fraud_ratio)
+    n_fraud = max(10, int(n_samples * fraud_ratio))
     n_normal = n_samples - n_fraud
 
     # 1. Time (0 ile 172800 saniye arasi - 48 saatlik surec)
     time_normal = rng.uniform(0, 172800, size=n_normal)
-    # Dolandiricilik islemleri genelde gece saatlerinde daha yuksek oranda karsilasilir
-    n_f1 = n_fraud // 2
-    n_f2 = n_fraud - n_f1
+    # Dolandiricilik islemleri gece saatlerinde (00:00-07:00) daha yogun, ama gunduz de gorulur
+    n_f1 = int(n_fraud * 0.45)
+    n_f2 = int(n_fraud * 0.35)
+    n_f3 = n_fraud - n_f1 - n_f2
     time_fraud = np.concatenate([
-        rng.uniform(0, 28800, size=n_f1),
-        rng.uniform(86400, 115200, size=n_f2)
+        rng.uniform(0, 25200, size=n_f1),
+        rng.uniform(86400, 111600, size=n_f2),
+        rng.uniform(0, 172800, size=n_f3)
     ])
     time_all = np.concatenate([time_normal, time_fraud])
 
-    # 2. V1 - V28 Özellikleri (PCA dönüşümlü sentetik gaussian dağılımları)
-    # Fraud islemleri bazi bilesenlerde (orn. V4, V11, V12, V14, V17) belirgin kayma gosterir
+    # 2. V1 - V28 Özellikleri (Gerçekçi örtüşme ve zorluk seviyesinde PCA dağılımı)
     v_features_normal = rng.randn(n_normal, 28)
-    v_features_fraud = rng.randn(n_fraud, 28)
+    v_features_fraud = rng.randn(n_fraud, 28) * 1.25
 
-    # Gercek Kaggle veri setindeki fraud korelasyon kaymalarini simule et
+    # Fraud alt tipleri: %80 belirgin patern, %20 sınır bölgede (zor yakalanan) fraudlar
+    hard_mask = rng.rand(n_fraud) < 0.18
+    scale_factor = np.where(hard_mask, 0.70, 1.35)
+
     # V4 ve V11 pozitif kayma gosterir
-    v_features_fraud[:, 3] += rng.normal(3.5, 1.2, size=n_fraud)  # V4
-    v_features_fraud[:, 10] += rng.normal(3.0, 1.0, size=n_fraud) # V11
-    # V10, V12, V14, V17 belirgin negatif kayma gosterir
-    v_features_fraud[:, 9] -= rng.normal(4.0, 1.5, size=n_fraud)  # V10
-    v_features_fraud[:, 11] -= rng.normal(5.0, 1.5, size=n_fraud) # V12
-    v_features_fraud[:, 13] -= rng.normal(6.0, 1.8, size=n_fraud) # V14
-    v_features_fraud[:, 16] -= rng.normal(4.5, 1.5, size=n_fraud) # V17
+    v_features_fraud[:, 3] += rng.normal(2.15, 0.85, size=n_fraud) * scale_factor  # V4
+    v_features_fraud[:, 10] += rng.normal(1.95, 0.80, size=n_fraud) * scale_factor # V11
+    # V10, V12, V14, V17 negatif kayma gosterir
+    v_features_fraud[:, 9] -= rng.normal(2.20, 0.90, size=n_fraud) * scale_factor  # V10
+    v_features_fraud[:, 11] -= rng.normal(2.55, 0.95, size=n_fraud) * scale_factor # V12
+    v_features_fraud[:, 13] -= rng.normal(2.90, 1.00, size=n_fraud) * scale_factor # V14
+    v_features_fraud[:, 16] -= rng.normal(2.40, 0.90, size=n_fraud) * scale_factor # V17
 
     v_all = np.vstack([v_features_normal, v_features_fraud])
 
     # 3. Amount (Log-normal dağılım)
-    # Normal islemler genelde kucuk-orta tutarlardir
-    amount_normal = np.round(rng.lognormal(mean=3.2, sigma=1.4, size=n_normal), 2)
-    # Fraud islemleri ya cok kucuk kart denemeleri ya da yuksek tutarli islemlerdir
+    amount_normal = np.round(rng.lognormal(mean=3.2, sigma=1.35, size=n_normal), 2)
     n_a1 = n_fraud // 3
     n_a2 = n_fraud - n_a1
     amount_fraud = np.round(np.concatenate([
-        rng.uniform(1.0, 20.0, size=n_a1),
-        rng.lognormal(mean=4.5, sigma=1.2, size=n_a2)
+        rng.uniform(1.0, 15.0, size=n_a1),
+        rng.lognormal(mean=4.8, sigma=1.25, size=n_a2)
     ]), 2)
     amount_all = np.concatenate([amount_normal, amount_fraud])
 
@@ -96,14 +89,28 @@ def generate_synthetic_credit_card_data(
     class_all = np.concatenate([np.zeros(n_normal, dtype=int), np.ones(n_fraud, dtype=int)])
 
     # 5. Customer ID (Pareto/Zipf dagilimli musteri islemleri)
-    # Bazi musteriler cok islem yapar, bazilari az
-    customer_weights = 1.0 / (np.arange(1, n_customers + 1) ** 0.8)
+    effective_customers = min(n_customers, max(500, n_samples // 15))
+    customer_weights = 1.0 / (np.arange(1, effective_customers + 1) ** 0.75)
     customer_weights /= customer_weights.sum()
-    customers = rng.choice(np.arange(1001, 1001 + n_customers), size=n_samples, p=customer_weights)
+    customers_normal = rng.choice(np.arange(1001, 1001 + effective_customers), size=n_normal, p=customer_weights)
+
+    # Fraud işlemlerinin bir kısmı aynı müşterinin kartından kısa sürede ardışık (velocity attack) yapılır
+    fraud_cust_pool = rng.choice(np.arange(1001, 1001 + effective_customers), size=max(5, n_fraud // 2), replace=False)
+    customers_fraud = rng.choice(fraud_cust_pool, size=n_fraud, replace=True)
+
+    # Aynı müşteriye ait ardışık fraudların zamanlarını birbirine yaklaştır (son 1-6 saat penceresinde yakalansın)
+    for cid in np.unique(customers_fraud):
+        c_idx = np.where(customers_fraud == cid)[0]
+        if len(c_idx) > 1:
+            base_t = time_fraud[c_idx[0]]
+            for k in range(1, len(c_idx)):
+                time_fraud[c_idx[k]] = min(172790.0, base_t + rng.uniform(30, 1800) * k)
+
+    time_all = np.concatenate([time_normal, time_fraud])
+    customers = np.concatenate([customers_normal, customers_fraud])
 
     # DataFrame Olustur
-    columns = ["Time"] + [f"V{i}" for i in range(1, 29)] + ["Amount", "Class"]
-    data_dict = {"Time": time_all}
+    data_dict: Dict[str, Any] = {"Time": time_all}
     for i in range(28):
         data_dict[f"V{i+1}"] = v_all[:, i]
     data_dict["Amount"] = amount_all
@@ -111,7 +118,6 @@ def generate_synthetic_credit_card_data(
     data_dict["customer_id"] = customers
 
     df = pd.DataFrame(data_dict)
-    # Zamana gore sirala
     df = df.sort_values(by="Time").reset_index(drop=True)
 
     logger.info(f"Sentetik veri basariyla uretildi. Boyut: {df.shape}")
@@ -125,31 +131,39 @@ def load_or_generate_credit_card_data(
     random_state: int = 42
 ) -> pd.DataFrame:
     """
-    Eğer belirtilen dosya yolu mevcutsa veriyi CSV'den okur; aksi halde
-    gerçekçi sentetik veri seti oluşturup kaydeder.
+    Eğer belirtilen dosya yolu mevcutsa ve istenen örnek boyutuyla uyumluysa CSV'den okur;
+    aksi halde istenen ölçekte gerçekçi veri seti oluşturup kaydeder.
     """
     if file_path and os.path.exists(file_path):
-        logger.info(f"Mevcut veri seti dosyadan yukleniyor: {file_path}")
+        logger.info(f"Mevcut veri seti kontrol ediliyor: {file_path}")
         df = pd.read_csv(file_path)
         if "customer_id" not in df.columns:
-            # PySpark zaman ve musteri bazli pencereler icin musteri kimligi olustur
+            # Gerçek Kaggle creditcard.csv (284,807 satır) yüklendiyse customer_id ekle
             rng = np.random.RandomState(random_state)
             n_customers = max(1000, len(df) // 30)
             df["customer_id"] = rng.randint(1001, 1001 + n_customers, size=len(df))
-        return df
+            return df
 
-    logger.info(f"'{file_path}' bulunamadi. Sentetik veri olusturuluyor...")
+        # Eğer mevcut sentetik dosyanın satır sayısı istenen n_samples ile aynıysa doğrudan kullan
+        if len(df) == n_samples:
+            logger.info(f"Mevcut veri seti boyutu ({len(df):,}) istenen boyutla eslesiyor, dosyadan yuklendi.")
+            return df
+        else:
+            logger.info(
+                f"Mevcut dosya boyutu ({len(df):,}) istenen boyuttan ({n_samples:,}) farkli. "
+                f"Istenen boyutta yeniden uretiliyor..."
+            )
+
     df = generate_synthetic_credit_card_data(
         n_samples=n_samples,
         fraud_ratio=fraud_ratio,
         random_state=random_state
     )
 
-    # Uretilen veriyi data klasorune kaydet
     if file_path:
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         df.to_csv(file_path, index=False)
-        logger.info(f"Uretilen veri seti suraya kaydedildi: {file_path}")
+        logger.info(f"Uretilen veri seti ({len(df):,} satir) suraya kaydedildi: {file_path}")
 
     return df
 
@@ -181,7 +195,7 @@ def calculate_class_distribution(df: pd.DataFrame) -> Dict[str, Any]:
 def calculate_summary_statistics(df: pd.DataFrame) -> pd.DataFrame:
     """
     'Amount' ve 'Time' değişkenlerinin Class 0 (Normal) ve Class 1 (Fraud)
-    bazında detaylı özet istatistiklerini (mean, std, min, 25%, 50%, 75%, max, skewness) üretir.
+    bazında detaylı özet istatistiklerini üretir.
     """
     stats_list = []
     for cls_val, cls_label in [(0, "Normal"), (1, "Fraud")]:
@@ -212,11 +226,7 @@ def run_eda_and_generate_report(
     output_metric_dir: str = "reports/metrics"
 ) -> Tuple[Dict[str, Any], pd.DataFrame]:
     """
-    Kapsamlı Keşifsel Veri Analizi (EDA) gerçekleştirir:
-    - Sınıf dağılımı görselleştirmesi (Lineer ve Logaritmik ölçek)
-    - Amount ve Time dağılım grafikleri
-    - En çok ilişkili PCA değişkenlerinin korelasyon ısı haritası
-    - JSON ve TXT formatlarında metrik ve özet raporlar oluşturur.
+    Kapsamlı Keşifsel Veri Analizi (EDA) gerçekleştirir ve görselleri kaydeder.
     """
     os.makedirs(output_fig_dir, exist_ok=True)
     os.makedirs(output_metric_dir, exist_ok=True)
@@ -236,14 +246,12 @@ def run_eda_and_generate_report(
     counts = [dist["normal_transactions"], dist["fraud_transactions"]]
     colors = ["#2b5c8f", "#d9534f"]
 
-    # Lineer Bar Plot
     axes[0].bar(classes, counts, color=colors, edgecolor="black", alpha=0.85)
     axes[0].set_title("Sinif Sayilari (Lineer Olcek - Dengesizligin Boyutu)", fontsize=12, fontweight="bold")
     axes[0].set_ylabel("Islem Sayisi")
     for i, count in enumerate(counts):
         axes[0].text(i, count + (max(counts) * 0.01), f"{count:,}", ha="center", fontweight="bold")
 
-    # Logaritmik Bar Plot
     axes[1].bar(classes, counts, color=colors, edgecolor="black", alpha=0.85)
     axes[1].set_yscale("log")
     axes[1].set_title("Sinif Sayilari (Logaritmik Olcek)", fontsize=12, fontweight="bold")
@@ -259,7 +267,6 @@ def run_eda_and_generate_report(
     # 2. Grafik: Amount ve Time Dağılımı (Normal vs Fraud)
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 
-    # Amount Boxplot (Log Scale)
     df_plot = df.copy()
     df_plot["Amount_Log"] = np.log1p(df_plot["Amount"])
     df_plot["Class_Label"] = df_plot["Class"].map({0: "Normal", 1: "Fraud"})
@@ -268,14 +275,12 @@ def run_eda_and_generate_report(
     axes[0, 0].set_title("Islem Tutari Log1p(Amount) Kutu Grafigi", fontsize=11, fontweight="bold")
     axes[0, 0].set_ylabel("log(1 + Amount)")
 
-    # Amount Histogram / KDE
     sns.kdeplot(data=df_plot[df_plot["Class"] == 0]["Amount_Log"], ax=axes[0, 1], label="Normal", color="#2b5c8f", fill=True, alpha=0.3)
     sns.kdeplot(data=df_plot[df_plot["Class"] == 1]["Amount_Log"], ax=axes[0, 1], label="Fraud", color="#d9534f", fill=True, alpha=0.3)
     axes[0, 1].set_title("Islem Tutari Yogunluk Grafigi (KDE)", fontsize=11, fontweight="bold")
     axes[0, 1].set_xlabel("log(1 + Amount)")
     axes[0, 1].legend()
 
-    # Time Dağılımı (Saat bazında)
     df_plot["Hour"] = (df_plot["Time"] / 3600) % 24
     sns.histplot(data=df_plot[df_plot["Class"] == 0], x="Hour", bins=24, ax=axes[1, 0], color="#2b5c8f", stat="density", kde=True)
     axes[1, 0].set_title("Normal Islemlerin Gun Ici Saat Dagilimi", fontsize=11, fontweight="bold")
@@ -304,7 +309,6 @@ def run_eda_and_generate_report(
     fig.savefig(corr_plot_path, dpi=300)
     plt.close(fig)
 
-    # Metrikleri ve Ozet Tablolari Kaydet
     dist_file = os.path.join(output_metric_dir, "eda_class_distribution.json")
     with open(dist_file, "w", encoding="utf-8") as f:
         json.dump(dist, f, indent=4)
@@ -312,10 +316,10 @@ def run_eda_and_generate_report(
     stats_file = os.path.join(output_metric_dir, "eda_summary_statistics.csv")
     stats_df.to_csv(stats_file, index=False)
 
-    logger.info(f"EDA gorselleri ve metrikleri basariyla olusturuldu.")
+    logger.info("EDA gorselleri ve metrikleri basariyla olusturuldu.")
     return dist, stats_df
 
 
 if __name__ == "__main__":
-    data = load_or_generate_credit_card_data(n_samples=100_000)
+    data = load_or_generate_credit_card_data(n_samples=30_000)
     run_eda_and_generate_report(data)

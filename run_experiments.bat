@@ -1,16 +1,16 @@
 @echo off
+chcp 65001 >nul
+set PYTHONIOENCODING=utf-8
+set PYTHONUTF8=1
 REM =============================================================================
 REM Proje 4: Kredi Karti Dolandiricilik Analizi - Otomasyon Betigi (Windows CMD/BAT)
 REM =============================================================================
 
-echo === Gerekli Paketlerin Kurulumu Denetleniyor ===
-pip install -r requirements.txt
-
-echo === 1. Hizli Dogrulama Testi (Quick Smoke Run) ===
+echo === 1. Hizli Dogrulama ve Rapor Uretimi (Quick Run - 30,000 Islem) ===
 python main.py --quick --sampling none
 
-echo === 2. Tam Olcekli Boru Hatti (Full Scale Run) ===
-python main.py --samples 150000 --sampling smote
+echo === 2. SMOTE Dengeleme Dogrulamasi (Quick Run + SMOTE) ===
+python main.py --quick --sampling smote
 
 echo === Tum Deneyler ve Raporlar Basariyla Tamamlandi! ===
 pause
