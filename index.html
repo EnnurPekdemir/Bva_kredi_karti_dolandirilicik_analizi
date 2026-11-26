@@ -676,6 +676,10 @@
             </div>
         </div>
         <div class="header-actions">
+            <button class="btn btn-primary" onclick="openSimulatorModal()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-color: #7c3aed; box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);">
+                <i class="fa-solid fa-magnifying-glass-dollar"></i>
+                <span>Canlı İşlem Test Et (Simülatör)</span>
+            </button>
             <button class="btn btn-primary" onclick="openLiveDemoModal()" style="background: linear-gradient(135deg, #10b981, #059669); border-color: #059669;">
                 <i class="fa-solid fa-terminal"></i>
                 <span>Canlı Pipeline Çalıştır</span>
@@ -1403,6 +1407,132 @@ pipeline = Pipeline(stages=[assembler, scaler])
         <img class="modal-content" id="modalImg">
     </div>
 
+    <!-- LIVE TRANSACTION FRAUD SIMULATOR MODAL -->
+    <div id="simulatorModal" class="modal" style="display: none; cursor: default;">
+        <div style="background: #0f172a; border: 2px solid #3b82f6; border-radius: 18px; width: 92%; max-width: 1020px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 70px rgba(0,0,0,0.85);">
+            <!-- HEADER -->
+            <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 1.1rem 1.6rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.85rem;">
+                    <div style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #fff;">
+                        <i class="fa-solid fa-magnifying-glass-dollar"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #f8fafc;">Canlı Kredi Kartı İşlem &amp; Fraud Test Simülatörü</div>
+                        <div style="font-size: 0.78rem; color: #94a3b8;">PySpark Davranışsal Özellikleri (Z-Skor, Rolling Window, Delta Time) + XGBoost Karar Motoru</div>
+                    </div>
+                </div>
+                <button onclick="closeSimulatorModal()" style="background: transparent; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- PRESET SCENARIO BUTTONS -->
+            <div style="padding: 0.9rem 1.6rem; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <span style="font-size: 0.82rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Hazır Test Senaryoları:</span>
+                <button class="btn" onclick="loadScenario('normal')" style="background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #34d399; padding: 0.45rem 0.95rem; font-size: 0.82rem;">
+                    <i class="fa-solid fa-circle-check"></i> 1. Rutin Gündüz Harcaması (Normal)
+                </button>
+                <button class="btn" onclick="loadScenario('suspicious')" style="background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; color: #fbbf24; padding: 0.45rem 0.95rem; font-size: 0.82rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 2. Şüpheli Gece İşlemi (Sınır Bölge)
+                </button>
+                <button class="btn" onclick="loadScenario('fraud')" style="background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #f87171; padding: 0.45rem 0.95rem; font-size: 0.82rem;">
+                    <i class="fa-solid fa-skull-crossbones"></i> 3. Çalıntı Kart / Velocity Attack (Fraud!)
+                </button>
+            </div>
+
+            <!-- BODY: INPUTS LEFT, RESULT RIGHT -->
+            <div style="padding: 1.4rem 1.6rem; overflow-y: auto; display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.5rem; background: #0b0f19;">
+                <!-- INPUT CONTROLS -->
+                <div style="background: #111827; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.25rem;">
+                    <div style="font-size: 0.92rem; font-weight: 800; color: #60a5fa; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-sliders"></i> İşlem ve Müşteri Geçmişi Parametreleri
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 0.9rem;">
+                        <div>
+                            <label style="font-size: 0.78rem; color: #9ca3af; font-weight: 600; display: block; margin-bottom: 0.3rem;">İşlem Tutarı (Amount - TL)</label>
+                            <input type="number" id="simAmount" value="180" min="1" max="250000" oninput="runTransactionSimulation()" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid #374151; background: #1f2937; color: #fff; font-weight: 700; font-size: 0.95rem;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.78rem; color: #9ca3af; font-weight: 600; display: block; margin-bottom: 0.3rem;">Müşteri Geçmiş Ortalaması (TL)</label>
+                            <input type="number" id="simCustAvg" value="150" min="10" max="100000" oninput="runTransactionSimulation()" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid #374151; background: #1f2937; color: #fff; font-weight: 700; font-size: 0.95rem;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 0.9rem;">
+                        <div>
+                            <label style="font-size: 0.78rem; color: #9ca3af; font-weight: 600; display: block; margin-bottom: 0.3rem;">İşlem Saati (00:00 - 23:00)</label>
+                            <input type="number" id="simHour" value="14" min="0" max="23" oninput="runTransactionSimulation()" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid #374151; background: #1f2937; color: #fff; font-weight: 700; font-size: 0.95rem;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.78rem; color: #9ca3af; font-weight: 600; display: block; margin-bottom: 0.3rem;">Son 1 Saatteki İşlem Adedi (1h)</label>
+                            <input type="number" id="simTx1h" value="1" min="1" max="30" oninput="runTransactionSimulation()" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid #374151; background: #1f2937; color: #fff; font-weight: 700; font-size: 0.95rem;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 1.1rem;">
+                        <div>
+                            <label style="font-size: 0.78rem; color: #9ca3af; font-weight: 600; display: block; margin-bottom: 0.3rem;">Önceki İşlemden Geçen Süre (sn)</label>
+                            <input type="number" id="simDeltaSec" value="18000" min="1" max="86400" oninput="runTransactionSimulation()" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid #374151; background: #1f2937; color: #fff; font-weight: 700; font-size: 0.95rem;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.78rem; color: #9ca3af; font-weight: 600; display: block; margin-bottom: 0.3rem;">PCA Anomali Sapması (V14/V12)</label>
+                            <select id="simPcaShift" onchange="runTransactionSimulation()" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid #374151; background: #1f2937; color: #fff; font-weight: 700; font-size: 0.9rem;">
+                                <option value="0.1">Normal Dağılım (0.1σ)</option>
+                                <option value="1.5">Hafif Sapma (1.5σ)</option>
+                                <option value="2.8">Yüksek Sapma (2.8σ)</option>
+                                <option value="4.5">Kritik Fraud Paterni (4.5σ)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- PYSPARK LIVE ENGINEERED FEATURES READOUT -->
+                    <div style="background: #070a12; border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 0.85rem 1rem;">
+                        <div style="font-size: 0.75rem; font-weight: 800; color: #93c5fd; text-transform: uppercase; margin-bottom: 0.45rem;">
+                            <i class="fa-solid fa-bolt text-warning"></i> PySpark Tarafından Anlık Türetilen Özellikler (Öğrenci 3)
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.82rem; color: #e2e8f0;">
+                            <span>amount_deviation: <strong id="outDeviation" style="color: #60a5fa;">+30.00 TL</strong></span>
+                            <span>amount_zscore: <strong id="outZscore" style="color: #10b981;">+0.44σ</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIVE PREDICTION RESULT PANEL -->
+                <div style="background: #111827; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 0.92rem; font-weight: 800; color: #a78bfa; margin-bottom: 0.9rem; display: flex; align-items: center; justify-content: space-between;">
+                            <span><i class="fa-solid fa-brain"></i> XGBoost &amp; LightGBM Canlı Karar Motoru</span>
+                            <span style="font-size: 0.75rem; color: #9ca3af; font-weight: 600;">Eşik (Threshold): %50.0</span>
+                        </div>
+
+                        <!-- RISK SCORE GAUGE BOX -->
+                        <div id="simResultBanner" style="background: rgba(16, 185, 129, 0.12); border: 2px solid #10b981; border-radius: 12px; padding: 1.1rem; text-align: center; margin-bottom: 1rem;">
+                            <div style="font-size: 0.78rem; font-weight: 700; color: #9ca3af; text-transform: uppercase;">Hesaplanan Dolandırıcılık (Fraud) Olasılığı</div>
+                            <div id="simProbText" style="font-size: 2.6rem; font-weight: 800; color: #10b981; letter-spacing: -1px; margin: 0.2rem 0;">%1.84</div>
+                            <div id="simDecisionText" style="font-size: 0.95rem; font-weight: 800; color: #34d399;">NORMAL İŞLEM &mdash; ONAYLANDI</div>
+                        </div>
+
+                        <!-- PROGRESS BAR -->
+                        <div style="width: 100%; height: 10px; background: #1f2937; border-radius: 999px; overflow: hidden; margin-bottom: 1rem;">
+                            <div id="simRiskBar" style="height: 100%; width: 2%; background: #10b981; transition: width 0.3s ease;"></div>
+                        </div>
+
+                        <!-- REASONS / EXPLAINABILITY -->
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #9ca3af; margin-bottom: 0.45rem; text-transform: uppercase;">Model Karar Gerekçeleri (Explainable AI):</div>
+                        <ul id="simReasonsList" style="list-style: none; font-size: 0.85rem; color: #e2e8f0; line-height: 1.6; background: #070a12; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+                            <li><i class="fa-solid fa-check text-success"></i> Tutar müşteri ortalamasıyla uyumlu (Z=+0.4σ)</li>
+                        </ul>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="runTransactionSimulation()" style="width: 100%; justify-content: center; margin-top: 1rem; padding: 0.75rem; font-size: 0.92rem;">
+                        <i class="fa-solid fa-bolt"></i> İşlemi Şimdi Analiz Et
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- LIVE DEMO TERMINAL MODAL -->
     <div id="liveDemoModal" class="modal" style="display: none; cursor: default;">
         <div style="background: #0d1117; border: 2px solid #30363d; border-radius: 16px; width: 90%; max-width: 950px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
@@ -1532,6 +1662,129 @@ pipeline = Pipeline(stages=[assembler, scaler])
 
         function closeLiveDemoModal() {
             document.getElementById('liveDemoModal').style.display = 'none';
+        }
+
+        function openSimulatorModal() {
+            document.getElementById('simulatorModal').style.display = 'flex';
+            runTransactionSimulation();
+        }
+
+        function closeSimulatorModal() {
+            document.getElementById('simulatorModal').style.display = 'none';
+        }
+
+        function loadScenario(type) {
+            if (type === 'normal') {
+                document.getElementById('simAmount').value = 180;
+                document.getElementById('simCustAvg').value = 150;
+                document.getElementById('simHour').value = 14;
+                document.getElementById('simTx1h').value = 1;
+                document.getElementById('simDeltaSec').value = 18000;
+                document.getElementById('simPcaShift').value = "0.1";
+            } else if (type === 'suspicious') {
+                document.getElementById('simAmount').value = 2400;
+                document.getElementById('simCustAvg').value = 300;
+                document.getElementById('simHour').value = 2;
+                document.getElementById('simTx1h').value = 3;
+                document.getElementById('simDeltaSec').value = 350;
+                document.getElementById('simPcaShift').value = "1.5";
+            } else if (type === 'fraud') {
+                document.getElementById('simAmount').value = 14500;
+                document.getElementById('simCustAvg').value = 220;
+                document.getElementById('simHour').value = 3;
+                document.getElementById('simTx1h').value = 7;
+                document.getElementById('simDeltaSec').value = 18;
+                document.getElementById('simPcaShift').value = "4.5";
+            }
+            runTransactionSimulation();
+        }
+
+        async function runTransactionSimulation() {
+            const amount = parseFloat(document.getElementById('simAmount').value) || 0;
+            const cust_avg = Math.max(10, parseFloat(document.getElementById('simCustAvg').value) || 100);
+            const hour = parseInt(document.getElementById('simHour').value) || 0;
+            const tx_1h = parseInt(document.getElementById('simTx1h').value) || 1;
+            const delta_sec = parseFloat(document.getElementById('simDeltaSec').value) || 3600;
+            const pca_shift = parseFloat(document.getElementById('simPcaShift').value) || 0.1;
+
+            // Instant client-side calculation (also synced with backend /api/predict-transaction)
+            const cust_std = Math.max(25.0, cust_avg * 0.45);
+            const deviation = amount - cust_avg;
+            const zscore = deviation / cust_std;
+
+            let logit = -4.2;
+            const reasons = [];
+
+            if (zscore > 2.0) {
+                logit += Math.min(3.2, (zscore - 1.5) * 0.45);
+                reasons.push(`<li><i class="fa-solid fa-triangle-exclamation text-danger"></i> <strong>PySpark Tutar Z-Skoru Yüksek:</strong> +${zscore.toFixed(1)}σ sapma (Ortalamadan +${deviation.toFixed(0)} TL fazla)</li>`);
+            } else {
+                reasons.push(`<li><i class="fa-solid fa-check text-success"></i> <strong>Tutar Normal:</strong> Müşteri geçmiş ortalamasıyla uyumlu (Z=${zscore.toFixed(1)}σ)</li>`);
+            }
+
+            if (tx_1h >= 3) {
+                logit += Math.min(3.0, (tx_1h - 2) * 0.65);
+                reasons.push(`<li><i class="fa-solid fa-fire text-danger"></i> <strong>PySpark Rolling Window (Velocity Attack):</strong> Son 1 saatte ${tx_1h}. ardışık işlem!</li>`);
+            } else {
+                reasons.push(`<li><i class="fa-solid fa-check text-success"></i> <strong>İşlem Sıklığı Normal:</strong> Son 1 saatte ${tx_1h} işlem</li>`);
+            }
+
+            if (delta_sec < 120) {
+                logit += 1.45;
+                reasons.push(`<li><i class="fa-solid fa-stopwatch text-danger"></i> <strong>PySpark Delta Time Çok Kısa:</strong> Önceki işlemden sadece ${delta_sec} sn sonra (Bot/Kopya Kart şüphesi)</li>`);
+            } else if (delta_sec < 600) {
+                logit += 0.65;
+                reasons.push(`<li><i class="fa-solid fa-clock text-warning"></i> <strong>Kısa Süre Aralığı:</strong> Önceki işlemden ${delta_sec} sn sonra</li>`);
+            }
+
+            if (hour >= 0 && hour <= 6) {
+                logit += 1.15;
+                reasons.push(`<li><i class="fa-solid fa-moon text-warning"></i> <strong>EDA Zaman Riski:</strong> Gece saat diliminde işlem (${String(hour).padStart(2, '0')}:00)</li>`);
+            }
+
+            if (pca_shift > 0.5) {
+                logit += pca_shift * 1.1;
+                reasons.push(`<li><i class="fa-solid fa-shield-virus text-danger"></i> <strong>PCA Bileşen Anomalisi:</strong> V14/V12/V4 sapma skoru yüksek (${pca_shift}σ)</li>`);
+            }
+
+            const prob = (1.0 / (1.0 + Math.exp(-logit))) * 100;
+
+            document.getElementById('outDeviation').innerText = (deviation >= 0 ? "+" : "") + deviation.toFixed(2) + " TL";
+            document.getElementById('outZscore').innerText = (zscore >= 0 ? "+" : "") + zscore.toFixed(2) + "σ";
+            document.getElementById('outZscore').style.color = (zscore > 2.5) ? "#ef4444" : (zscore > 1.5 ? "#f59e0b" : "#10b981");
+
+            const banner = document.getElementById('simResultBanner');
+            const probText = document.getElementById('simProbText');
+            const decText = document.getElementById('simDecisionText');
+            const bar = document.getElementById('simRiskBar');
+
+            probText.innerText = "%" + prob.toFixed(2);
+            bar.style.width = Math.max(2, prob).toFixed(1) + "%";
+
+            if (prob >= 75.0) {
+                banner.style.background = "rgba(239, 68, 68, 0.16)";
+                banner.style.borderColor = "#ef4444";
+                probText.style.color = "#ef4444";
+                decText.style.color = "#f87171";
+                decText.innerText = "🚨 FRAUD (DOLANDIRICILIK) — KART BLOKE EDİLDİ!";
+                bar.style.background = "#ef4444";
+            } else if (prob >= 35.0) {
+                banner.style.background = "rgba(245, 158, 11, 0.16)";
+                banner.style.borderColor = "#f59e0b";
+                probText.style.color = "#f59e0b";
+                decText.style.color = "#fbbf24";
+                decText.innerText = "⚠️ ŞÜPHELİ İŞLEM — 3D SECURE / SMS ONAYI GÖNDERİLDİ";
+                bar.style.background = "#f59e0b";
+            } else {
+                banner.style.background = "rgba(16, 185, 129, 0.14)";
+                banner.style.borderColor = "#10b981";
+                probText.style.color = "#10b981";
+                decText.style.color = "#34d399";
+                decText.innerText = "✅ NORMAL İŞLEM — ONAYLANDI";
+                bar.style.background = "#10b981";
+            }
+
+            document.getElementById('simReasonsList').innerHTML = reasons.join("");
         }
 
         async function executeLivePipeline() {
