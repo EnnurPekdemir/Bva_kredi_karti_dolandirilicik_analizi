@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Proje 4: Kredi Kartı Dolandırıcılık Analizi - Sunum ve Eğitim Rehberi</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 14mm 14mm 14mm 14mm;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            color: #1e293b;
+            background: #ffffff;
+            line-height: 1.55;
+            font-size: 10.5pt;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        .header-cover {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: #ffffff;
+            padding: 24px 28px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+        }
+        .header-cover h1 {
+            font-size: 20pt;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        .header-cover .subtitle {
+            font-size: 11pt;
+            color: #93c5fd;
+            font-weight: 500;
+        }
+        table.syllabus-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+            font-size: 9.8pt;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+        table.syllabus-table th, table.syllabus-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        table.syllabus-table tr.head-row {
+            background: #cbd5e1;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        table.syllabus-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        table.syllabus-table td.label-col {
+            font-weight: 700;
+            width: 24%;
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .story-box {
+            background: #f0f9ff;
+            border: 2px solid #0284c7;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+        }
+        .story-box h2 {
+            font-size: 12.5pt;
+            color: #0369a1;
+            margin-bottom: 8px;
+        }
+        .story-box ul {
+            margin-left: 18px;
+        }
+        .story-box li {
+            margin-bottom: 5px;
+        }
+        .student-header {
+            background: linear-gradient(135deg, #1e293b 0%, #2563eb 100%);
+            color: #ffffff;
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .student-header h2 {
+            font-size: 14pt;
+            font-weight: 800;
+        }
+        .student-header .task-desc {
+            font-size: 9.8pt;
+            color: #bfdbfe;
+            margin-top: 2px;
+        }
+        .badge-file {
+            background: rgba(255,255,255,0.18);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-family: Consolas, monospace;
+            font-size: 9pt;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .section-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 13px 16px;
+            margin-bottom: 12px;
+            background: #ffffff;
+        }
+        .section-card.learn {
+            background: #f8fafc;
+            border-left: 5px solid #3b82f6;
+        }
+        .section-card.speech {
+            background: #eff6ff;
+            border: 2px solid #2563eb;
+        }
+        .section-card.qa {
+            background: #fffbeb;
+            border-left: 5px solid #f59e0b;
+        }
+        .section-title {
+            font-size: 11.5pt;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .learn .section-title { color: #1d4ed8; }
+        .speech .section-title { color: #1e40af; }
+        .qa .section-title { color: #b45309; }
+
+        .speech-text {
+            font-size: 10.5pt;
+            line-height: 1.62;
+            color: #0f172a;
+            font-style: italic;
+        }
+        .speech-text p {
+            margin-bottom: 7px;
+        }
+        .speech-text strong {
+            color: #1e3a8a;
+            background: #fef08a;
+            padding: 0 3px;
+            border-radius: 3px;
+            font-style: normal;
+        }
+        ul.clean-list {
+            margin-left: 18px;
+        }
+        ul.clean-list li {
+            margin-bottom: 5px;
+        }
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .metric-pill {
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+        .metric-pill .lbl {
+            font-size: 8pt;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .metric-pill .val {
+            font-size: 13.5pt;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 2px;
+        }
+        .img-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .img-grid-single {
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .img-box {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 6px;
+            background: #ffffff;
+            text-align: center;
+        }
+        .img-box img {
+            max-width: 100%;
+            max-height: 190px;
+            height: auto;
+            border-radius: 4px;
+        }
+        .img-box.wide img {
+            max-height: 210px;
+        }
+        .img-caption {
+            font-size: 8.5pt;
+            color: #475569;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+        .code-snippet {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: Consolas, monospace;
+            font-size: 8.8pt;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            white-space: pre-wrap;
+            line-height: 1.45;
+        }
+        .qa-item {
+            margin-bottom: 7px;
+        }
+        .qa-item:last-child {
+            margin-bottom: 0;
+        }
+        .qa-q {
+            font-weight: 700;
+            color: #92400e;
+        }
+        .qa-a {
+            color: #1e293b;
+            margin-top: 2px;
+        }
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9pt;
+            margin: 8px 0;
+        }
+        table.data-table th, table.data-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 8px;
+            text-align: center;
+        }
+        table.data-table th {
+            background: #1e293b;
+            color: #ffffff;
+        }
+        table.data-table tr:nth-child(even) {
+            background: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ======================= SAYFA 1: KAPAK & GENEL BAKIŞ ======================= -->
+    <div class="header-cover">
+        <h1>Proje 4: Kredi Kartı Dolandırıcılık Analizi</h1>
+        <div class="subtitle">Büyük Veri Mühendisliği & Makine Öğrenimi | 5 Öğrenci İçin Eğitim, Teknik Rapor ve Birebir Sunum Konuşma Rehberi</div>
+    </div>
+
+    <table class="syllabus-table">
+        <tr>
+            <td class="label-col">Problem</td>
+            <td><strong>Çok büyük işlem verisinde az sayıdaki fraud (dolandırıcılık) işleminin tespiti.</strong></td>
+        </tr>
+        <tr>
+            <td class="label-col">Araştırma Sorusu</td>
+            <td><strong>Çok veri olması, nadir fraud olaylarını bulmayı gerçekten kolaylaştırıyor mu?</strong></td>
+        </tr>
+        <tr class="head-row">
+            <td>Öğrenci</td>
+            <td>Konu İçeriği ve Sorumluluk Alanı</td>
+        </tr>
+        <tr>
+            <td class="label-col">Öğrenci 1</td>
+            <td>İşlem veri setini hazırlar ve veri dağılımını inceler. (<code>src/data_prep.py</code>)</td>
+        </tr>
+        <tr>
+            <td class="label-col">Öğrenci 2</td>
+            <td>Class imbalance problemini analiz eder ve uygun dengeleme yaklaşımını uygular. (<code>src/imbalance.py</code>)</td>
+        </tr>
+        <tr>
+            <td class="label-col">Öğrenci 3</td>
+            <td>Spark üzerinde müşteri ve zaman bazlı davranış özellikleri üretir. (<code>src/spark_features.py</code>)</td>
+        </tr>
+        <tr>
+            <td class="label-col">Öğrenci 4</td>
+            <td>Fraud sınıflandırma modeli geliştirir; accuracy yerine precision, recall, F1, AUPRC gibi ölçütleri inceler. (<code>src/modeling.py</code>)</td>
+        </tr>
+        <tr>
+            <td class="label-col">Öğrenci 5</td>
+            <td>Veri büyüklüğü ve sınıf dengesizliğinin eğitim süresi ve model performansına etkisini analiz eder. (<code>src/experiments.py</code>)</td>
+        </tr>
+    </table>
+
+    <div class="story-box">
+        <h2>🧠 BÖLÜM 0: Hepinizin Bilmesi Gereken "Ana Hikaye" (Büyük Resim)</h2>
+        <ul>
+            <li><strong>Problem Nedir?</strong> Bir bankada saniyede binlerce kredi kartı harcaması geçer. Bunların <strong>%99.83'ü dürüst vatandaşın normal harcaması</strong>, sadece <strong>%0.17'si (her 588 işlemden yalnızca 1 tanesi) dolandırıcılıktır (Fraud)</strong>.</li>
+            <li><strong>Neden Zor?</strong> Buna veri biliminde <em>Extreme Class Imbalance (Aşırı Sınıf Dengesizliği)</em> denir. Standart bir yapay zeka modeline bu veriyi düz verirseniz, model tembellik yapar ve gelen her işleme "Normal" der geçer.</li>
+            <li><strong>Biz Ne Yaptık?</strong> 5 kişilik bir ekip olarak uçtan uca çalışan modüler bir Python & PySpark boru hattı (pipeline) kurduk:
+                <strong>Öğrenci 1</strong> veriyi ve dağılımı analiz etti &rarr;
+                <strong>Öğrenci 2</strong> 1:587 dengesizliğini çözdü ve test setine veri sızıntısını (Data Leakage) engelledi &rarr;
+                <strong>Öğrenci 3</strong> PySpark pencereleriyle müşterinin son 1-6-24 saatlik harcama davranışlarını çıkardı &rarr;
+                <strong>Öğrenci 4</strong> modelleri kurup <em>Accuracy Paradox</em>'u kanıtladı ve AUPRC ile değerlendirdi &rarr;
+                <strong>Öğrenci 5</strong> veriyi %10, %30, %60, %100 ölçeklerinde test ederek araştırma sorusunu bilimsel grafiklerle yanıtladı.
+            </li>
+        </ul>
+    </div>
+
+    <div class="section-card learn">
+        <div class="section-title">⚡ Sunum Günü Bilgisayar Başında Hızlı Akış Özeti</div>
+        <ul class="clean-list">
+            <li><strong>Arayüzü Açmak İçin:</strong> Klasördeki <code>index.html</code> veya <code>run_dashboard.bat</code> dosyasına çift tıklayın. Sağ üstten <strong>Tam Ekran</strong> ve sınıf aydınlıksa <strong>Projektör Açık Modu</strong>'nu seçin.</li>
+            <li><strong>Sırayla Geçiş:</strong> Her öğrenci kendi sekmesinde (Sayfa 1..5) konuşmasını yapar, klavyeden <strong>Sağ Ok (&rarr;)</strong> tuşuna basarak sırayı arkadaşına devreder.</li>
+            <li><strong>Canlı Kod Gösterimi (Hoca İsterse):</strong> Sağ üstteki yeşil <strong>"Canlı Çalıştır (Live Demo)"</strong> butonuna basın veya terminalde <code>python main.py --quick</code> komutunu çalıştırın.</li>
+        </ul>
+    </div>
+
+    <!-- ======================= SAYFA 2: ÖĞRENCİ 1 ======================= -->
+    <div class="page-break"></div>
+    <div class="student-header">
+        <div>
+            <h2>ÖĞRENCİ 1: Veri Hazırlığı ve Keşifsel Veri Analizi (EDA)</h2>
+            <div class="task-desc">Görev: İşlem veri setini hazırlar ve veri dağılımını inceler.</div>
+        </div>
+        <div class="badge-file">src/data_prep.py</div>
+    </div>
+
+    <div class="metrics-row">
+        <div class="metric-pill"><div class="lbl">Toplam İşlem</div><div class="val">30,000+</div></div>
+        <div class="metric-pill"><div class="lbl">Normal İşlem (0)</div><div class="val" style="color:#16a34a;">%99.83 (29,949)</div></div>
+        <div class="metric-pill"><div class="lbl">Fraud İşlem (1)</div><div class="val" style="color:#dc2626;">%0.17 (51)</div></div>
+        <div class="metric-pill"><div class="lbl">Dengesizlik (IR)</div><div class="val" style="color:#d97706;">1 : 587.24</div></div>
+    </div>
+
+    <div class="img-grid">
+        <div class="img-box">
+            <img src="figures/01_class_distribution.png" alt="Sınıf Dağılımı">
+            <div class="img-caption">Grafik 1: Sınıf Dağılımı (Lineer vs Logaritmik Ölçek)</div>
+        </div>
+        <div class="img-box">
+            <img src="figures/02_amount_time_distribution.png" alt="Amount ve Time Dağılımı">
+            <div class="img-caption">Grafik 2: İşlem Tutarı (Log) ve Gün İçi Saat Dağılımı</div>
+        </div>
+    </div>
+
+    <div class="section-card learn">
+        <div class="section-title">📚 1. ÖNCE SEN ÖĞREN (Ne Yaptın ve Mantığı Nedir?)</div>
+        <ul class="clean-list">
+            <li><strong>Veri Seti Yapısı:</strong> Kaggle formatındaki verimizde <code>Time</code> (saniye cinsinden 48 saatlik akış), <code>V1..V28</code> (müşteri gizliliği için PCA Temel Bileşen Analizi ile şifrelenmiş sayısal özellikler), <code>Amount</code> (işlem tutarı), <code>Class</code> (0: Normal, 1: Fraud) ve <code>customer_id</code> sütunları yer alır.</li>
+            <li><strong>Neden Logaritmik Ölçek Kullandık?</strong> Normal işlemler 29.949 iken Fraud sadece 51 adettir. Lineer grafikte (sol) 51 adet işlem sıfır çizgisinde kaybolur. Logaritmik ölçek (<code>Log10</code>) kullanarak iki sınıfı aynı grafikte görünür kıldık.</li>
+            <li><strong>Keşfettiğimiz 2 Kritik Bulgu:</strong> (1) Normal harcamalar gündüz yoğunlaşırken, dolandırıcılıklar <strong>gece yarısı ve sabaha karşı (kart sahibi uyurken)</strong> zirve yapar. (2) Tutar (<code>Amount</code>) sağa çarpık olduğu için <code>log(1+Amount)</code> dönüşümü yaptık; dolandırıcılar ya kartı denemek için çok ufak tutarlar ya da limiti boşaltmak için yüksek tutarlar çekmektedir.</li>
+        </ul>
+    </div>
+
+    <div class="section-card speech">
+        <div class="section-title">🎤 2. SUNUMDA BİREBİR KONUŞMA METNİ (Sıra Sana Geldiğinde Böyle Anlat)</div>
+        <div class="speech-text">
+            <p>"Merhaba hocam ve arkadaşlar. Projemizin ilk aşaması olan <strong>İşlem Veri Setinin Hazırlanması ve Veri Dağılımının İncelenmesi (EDA)</strong> görevini ben gerçekleştirdim (<code>src/data_prep.py</code>).</p>
+            <p>İlk olarak kredi kartı işlem verimizi incelediğimizde, bu problemin neden klasik bir sınıflandırma problemi olmadığını hemen görüyoruz. Veri setimizde işlemlerin <strong>%99.83'ü normal (Class 0)</strong> iken, yalnızca <strong>%0.17'si dolandırıcılık (Class 1)</strong> işlemidir. Yani <strong>Dengesizlik Oranımız (Imbalance Ratio) 1'e 587'dir.</strong> Her 1 dolandırıcı işleme karşılık 587 adet normal harcama bulunmaktadır.</p>
+            <p><em>(Grafik 1'i göstererek)</em> İlk grafiğimizin sol tarafında gördüğünüz gibi, lineer ölçekte baktığımızda dolandırıcılık işlemleri neredeyse görünmezdir. Bu yüzden sağ tarafta logaritmik ölçek kullanarak azınlık sınıfını analiz edilebilir hale getirdik.</p>
+            <p><em>(Grafik 2'yi göstererek)</em> Veri dağılımını <code>Amount</code> (Tutar) ve <code>Time</code> (Zaman) ekseninde incelediğimizde ise çok kritik iki örüntü yakaladık: Birincisi; normal harcamalar gün içinde gündüz saatlerinde düzenli dağılırken, <strong>dolandırıcılık işlemleri özellikle gece yarısı ve sabaha karşı (kart sahipleri uyurken)</strong> yoğunlaşmaktadır. İkincisi; <code>Amount</code> değişkeni aşırı sağa çarpık olduğu için <code>log(1+Amount)</code> dönüşümüyle inceledik; dolandırıcıların ya kartı test etmek için mikro tutarlar ya da yüksek riskli tutarlar çektiğini tespit ettik. Bu bulgular benden sonraki arkadaşlarımın çalışmalarına temel oluşturdu. Şimdi sözü sınıf dengesizliği çözümleri için 2. arkadaşımıza bırakıyorum."</p>
+        </div>
+    </div>
+
+    <div class="section-card qa">
+        <div class="section-title">🛡️ 3. HOCA SORARSA ŞOV YAPACAĞIN CEVAPLAR</div>
+        <div class="qa-item">
+            <div class="qa-q">Soru: "Verideki V1..V28 nedir, neden gerçek isimleri yazmıyor?"</div>
+            <div class="qa-a">Cevap: "Hocam, finansal işlemlerde kişisel verilerin gizliliği (KVKK/GDPR) nedeniyle ham özellikler paylaşılmaz; banka bu özellikleri PCA (Temel Bileşen Analizi) ile dönüştürmüştür. Yalnızca Time ve Amount orijinal ölçeğindedir."</div>
+        </div>
+    </div>
+
+    <!-- ======================= SAYFA 3: ÖĞRENCİ 2 ======================= -->
+    <div class="page-break"></div>
+    <div class="student-header">
+        <div>
+            <h2>ÖĞRENCİ 2: Sınıf Dengesizliği (Class Imbalance) & Sızıntı Koruması</h2>
+            <div class="task-desc">Görev: Class imbalance problemini analiz eder ve uygun dengeleme yaklaşımını uygular.</div>
+        </div>
+        <div class="badge-file">src/imbalance.py</div>
+    </div>
+
+    <div class="metrics-row">
+        <div class="metric-pill"><div class="lbl">Dengesizlik Seviyesi</div><div class="val" style="color:#dc2626;">Extreme (1:587)</div></div>
+        <div class="metric-pill"><div class="lbl">Scale Pos Weight</div><div class="val" style="color:#2563eb;">584.37</div></div>
+        <div class="metric-pill"><div class="lbl">Stratified Split</div><div class="val">%80 Train / %20 Test</div></div>
+        <div class="metric-pill"><div class="lbl">Data Leakage Guard</div><div class="val" style="color:#16a34a;">%100 İzole</div></div>
+    </div>
+
+    <div class="section-card learn">
+        <div class="section-title">📚 1. ÖNCE SEN ÖĞREN (Ne Yaptın ve Mantığı Nedir?)</div>
+        <ul class="clean-list">
+            <li><strong>Neden Dengeleme Şart?</strong> Verinin %99.83'ü Normal olduğu için, standart bir algoritma tüm veriye "Normal" dese bile %0.17 hata yapar. Model azınlık sınıfını (Fraud) gürültü sanıp yok sayar.</li>
+            <li><strong>Modülünde Kurduğun 3 Dengeleme Yaklaşımı:</strong>
+                <br>1. <strong>Random Undersampling (Rastgele Alt Örnekleme):</strong> Çoğunluk sınıfından (Normal) rastgele örnek silerek sayıyı eşitler. <em>Artısı:</em> Çok hızlıdır. <em>Eksisi:</em> Silinen normal işlemlerle önemli bilgi kaybı (Information Loss) yaşanabilir.
+                <br>2. <strong>SMOTE (Synthetic Minority Over-sampling Technique):</strong> Fraud örneklerini kopyalamak yerine, $k$-en yakın komşuluk ($k$-NN) ile iki fraud örneği arasında matematiksel olarak <strong>yeni sentetik fraud işlemleri</strong> üretir.
+                <br>3. <strong>Algoritmik Dengeleme (<code>scale_pos_weight = 584.37</code>):</strong> Veri sayısını hiç değiştirmez! Karar ağacının kayıp (loss) fonksiyonuna der ki: <em>"1 tane Fraud işlemini kaçırmanın cezası, 1 normal işlemin 584 katıdır!"</em>
+            </li>
+            <li><strong>EN KRİTİK NOKTA: Data Leakage (Veri Sızıntısı) Koruması:</strong> Eğer SMOTE'u tüm veriye uygulayıp sonra Train/Test diye bölersen, test setine sentetik veri sızar ve test setinin gerçek dünya dağılımı bozulur! Sen <code>DataLeakageGuard</code> sınıfını yazdın: Veri önce <strong>Stratified</strong> olarak %80 Train (24.000) ve %20 Test (6.000) diye bölünür. Dengeleme <strong>SADECE TRAIN</strong> setine uygulanır! Test setine asla dokunulmaz.</li>
+        </ul>
+    </div>
+
+    <div class="code-snippet"># src/imbalance.py - Veri Sızıntısı Koruması ve Dengeleme Mimarisi
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, stratify=y, random_state=42)
+DataLeakageGuard.verify_split_integrity(X_train, X_test, y_train, y_test)  # Ortak indeks ve sızıntı kontrolü
+scale_pos_weight = get_scale_pos_weight(y_train)  # Negatif / Pozitif = 584.37 (Sadece Train üzerinden!)
+X_train_res, y_train_res = apply_sampling_strategy(X_train, y_train, method="smote", sampling_strategy=0.1)</div>
+
+    <div class="section-card speech">
+        <div class="section-title">🎤 2. SUNUMDA BİREBİR KONUŞMA METNİ (Sıra Sana Geldiğinde Böyle Anlat)</div>
+        <div class="speech-text">
+            <p>"Teşekkürler. İlk arkadaşımızın ortaya koyduğu <strong>1'e 587'lik aşırı sınıf dengesizliği (Class Imbalance)</strong> problemini analiz etmek ve uygun dengeleme yaklaşımlarını uygulamak benim görevimdi (<code>src/imbalance.py</code>).</p>
+            <p>Eğer bu dengesiz veriyi doğrudan modele verirsek, model çoğunluk sınıfına aşırı uyum sağlar (majority bias) ve nadir fraud işlemlerini göz ardı eder. Bunu çözmek için modülümde 3 farklı yaklaşımı kurguladım:</p>
+            <p>1. Birincisi <strong>Random Undersampling</strong>: Çoğunluk sınıfındaki normal işlemleri alt örnekleyerek denge sağlamak.<br>
+            2. İkincisi <strong>SMOTE</strong>: Azınlık sınıfındaki dolandırıcılık örneklerinin $k$-en yakın komşularını kullanarak özellik uzayında sentetik yeni fraud örnekleri üretmek.<br>
+            3. Üçüncüsü ise <strong>Algoritmik Maliyet Ağırlıklandırma (<code>scale_pos_weight</code> ve <code>class_weight</code>)</strong>: Veri hacmini yapay olarak şişirmeden, modelin hata fonksiyonunda azınlık sınıfına <strong>584.37 kat</strong> daha yüksek ceza ağırlığı vermektir.</p>
+            <p>Ancak hocam, bu aşamada kurduğum en kritik mühendislik yapısı <strong><code>DataLeakageGuard</code> (Veri Sızıntısı Koruma)</strong> katmanıdır. Literatürde sık yapılan bir hata, SMOTE işlemini tüm veri setine uygulayıp sonrasında Train-Test ayrımı yapmaktır. Bu yapıldığında eğitimden test kümesine bilgi sızar ve test sonuçları yapay olarak şişer.</p>
+            <p>Bizim boru hattımızda ise veri önce <strong>Stratified (katmanlı)</strong> olarak %80 Eğitim ve %20 Test şeklinde izole edilmekte; dengeleme teknikleri <strong>KESİNLİKLE yalnızca Eğitim (Train) kümesine</strong> uygulanmaktadır. Test kümemiz ise gerçek dünyadaki bir bankanın canlı veri akışını temsil edecek şekilde el değmemiş 1:587 oranında bırakılmıştır. Şimdi sözü PySpark özellik mühendisliği için 3. arkadaşımıza devrediyorum."</p>
+        </div>
+    </div>
+
+    <div class="section-card qa">
+        <div class="section-title">🛡️ 3. HOCA SORARSA ŞOV YAPACAĞIN CEVAPLAR</div>
+        <div class="qa-item">
+            <div class="qa-q">Soru: "Bu 3 yöntemden hangisi büyük veride en avantajlı oldu?"</div>
+            <div class="qa-a">Cevap: "Hocam, büyük veride ağaç tabanlı modellerle çalışırken <code>scale_pos_weight</code> (Algoritmik Ağırlıklandırma) en verimli sonucu verdi. Çünkü Undersampling gibi veri kaybına yol açmıyor ve SMOTE gibi milyonlarca sentetik satır ekleyip eğitim süresini uzatmıyor."</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-q">Soru: "Stratified Split neden önemli?"</div>
+            <div class="qa-a">Cevap: "Verimizde zaten çok az (51 adet) fraud var. Rastgele bölseydik test setine hiç fraud düşmeyebilirdi. Stratified split, %0.17'lik oranın hem Train hem Test kümesinde birebir korunmasını garanti eder."</div>
+        </div>
+    </div>
+
+    <!-- ======================= SAYFA 4: ÖĞRENCİ 3 ======================= -->
+    <div class="page-break"></div>
+    <div class="student-header">
+        <div>
+            <h2>ÖĞRENCİ 3: PySpark ile Davranışsal Özellik Mühendisliği</h2>
+            <div class="task-desc">Görev: Spark üzerinde müşteri ve zaman bazlı davranış özellikleri üretir.</div>
+        </div>
+        <div class="badge-file">src/spark_features.py</div>
+    </div>
+
+    <div class="metrics-row">
+        <div class="metric-pill"><div class="lbl">Türetilen Özellik</div><div class="val" style="color:#7c3aed;">+7 Davranışsal</div></div>
+        <div class="metric-pill"><div class="lbl">Kayan Pencereler</div><div class="val" style="color:#2563eb;">1s / 6s / 24s</div></div>
+        <div class="metric-pill"><div class="lbl">Toplam Özellik</div><div class="val" style="color:#16a34a;">37 Sütun</div></div>
+        <div class="metric-pill"><div class="lbl">Spark Mimarisi</div><div class="val">Window &amp; Pipeline</div></div>
+    </div>
+
+    <div class="section-card learn">
+        <div class="section-title">📚 1. ÖNCE SEN ÖĞREN (Ne Yaptın ve Mantığı Nedir?)</div>
+        <ul class="clean-list">
+            <li><strong>Neden Davranışsal Özellik Üretiyoruz?</strong> Ham veride sadece <em>"5.000 TL harcandı"</em> yazar. Tek başına bu bilgi işlemin fraud olup olmadığını söylemez! Eğer o müşteri her gün 10.000 TL harcayan biriyse normaldir; ama günde 50 TL harcayan bir öğrencinin kartından <strong>1 saat içinde 4 kez 5.000 TL çekildiyse</strong> bu %100 dolandırıcılıktır!</li>
+            <li><strong>PySpark Window İle Ürettiğin 7 Yeni Özellik:</strong>
+                <br>1. <strong>Son 1, 6 ve 24 Saatteki İşlem Sayıları (<code>tx_count_last_1h</code>, <code>6h</code>, <code>24h</code>):</strong> PySpark <code>Window.partitionBy("customer_id").orderBy("Time_sec").rangeBetween(-3600, 0)</code> kullanarak müşterinin son 1, 6 ve 24 saatteki işlem sıklığını saydık. <em>(Kartı çalan kişi bloke edilmeden önce seri harcama yapar - Velocity Attack).</em>
+                <br>2. <strong>Müşteri Ortalama Tutarı ve Sapma (<code>customer_avg_amount</code>, <code>amount_deviation</code>, <code>amount_zscore</code>):</strong> Müşterinin o işlem anına kadarki kümülatif ortalamasını ve standart sapmasını hesaplayıp <strong>Z-Skoru</strong> çıkardık: $Z = (\text{Tutar} - \text{Ortalama}) / \text{Std}$. Yani <em>"Bu işlem müşterinin kendi normalinden kaç standart sapma saptı?"</em>
+                <br>3. <strong>İşlemler Arası Süre Farkı (<code>delta_time_sec</code>):</strong> PySpark <code>F.lag("Time_sec", 1)</code> ile müşterinin bir önceki işleminden bu yana geçen saniyeyi hesapladık (Örn: 5 saniye arayla iki işlem yapıldıysa bot saldırısıdır).
+            </li>
+            <li><strong>PySpark ML Pipeline:</strong> <code>VectorAssembler</code> ve <code>StandardScaler</code> ile 37 özelliği vektör haline getirdin.</li>
+        </ul>
+    </div>
+
+    <div class="code-snippet"># src/spark_features.py - PySpark Window (Kayan Pencere) Fonksiyonları
+w_1h = Window.partitionBy("customer_id").orderBy("Time_sec").rangeBetween(-3600, 0)
+w_6h = Window.partitionBy("customer_id").orderBy("Time_sec").rangeBetween(-21600, 0)
+w_hist = Window.partitionBy("customer_id").orderBy("Time_sec").rowsBetween(Window.unboundedPreceding, 0)
+
+df_featured = (
+    df_spark
+    .withColumn("tx_count_last_1h", F.count("Amount").over(w_1h))
+    .withColumn("tx_count_last_6h", F.count("Amount").over(w_6h))
+    .withColumn("customer_avg_amount", F.avg("Amount").over(w_hist))
+    .withColumn("amount_zscore", (F.col("Amount") - F.col("customer_avg_amount")) / (F.col("customer_std_amount") + 1e-5))
+    .withColumn("delta_time_sec", F.coalesce(F.col("Time_sec") - F.lag("Time_sec", 1).over(w_lag), F.lit(86400.0)))
+)</div>
+
+    <div class="section-card speech">
+        <div class="section-title">🎤 2. SUNUMDA BİREBİR KONUŞMA METNİ (Sıra Sana Geldiğinde Böyle Anlat)</div>
+        <div class="speech-text">
+            <p>"Teşekkür ederim. Benim görevim, <strong>PySpark üzerinde müşteri ve zaman bazlı davranışsal özellikler (Behavioral Features)</strong> üretmekti (<code>src/spark_features.py</code>).</p>
+            <p>Gerçek dünya kredi kartı işlemlerinde, bir harcamanın dolandırıcılık olup olmadığını sadece o anki işlem tutarına bakarak tespit edemeyiz. Örneğin 5.000 TL'lik bir işlem bir müşteri için çok sıradanken, başka bir müşteri için büyük bir anomalidir. Dolayısıyla modelin müşterinin <strong>geçmiş harcama davranışını</strong> bilmesi gerekir.</p>
+            <p>Büyük veri ölçeğinde bu hesaplamaları dağıtık yapabilmek için <strong>PySpark SQL ve Window (Pencereleme)</strong> mimarisini kullandım. Veriyi <code>customer_id</code> bazında bölümleyip (<code>partitionBy</code>) işlem zamanına göre sıralayarak (<code>orderBy</code>) şu 3 ana grupta toplam <strong>7 yeni davranış özelliği</strong> türettim:</p>
+            <p>1. <strong>Kayan Zaman Pencereleri (Rolling Window Counts):</strong> <code>rangeBetween</code> kullanarak müşterinin <strong>son 1 saat, son 6 saat ve son 24 saat</strong> içinde yaptığı işlem sayılarını hesapladım. Çünkü kart çalındığında dolandırıcılar kart iptal edilmeden önce kısa sürede ardışık işlemler (Velocity Attack) gerçekleştirirler.<br>
+            2. <strong>Müşteri Bazlı Tutar Sapması ve Z-Skoru:</strong> Her müşterinin o işlem anına kadarki kümülatif harcama ortalamasını (<code>customer_avg_amount</code>) hesaplayarak, güncel işlemin müşterinin kendi geçmişinden kaç standart sapma uzaklaştığını gösteren <strong>Z-Score (<code>amount_zscore</code>)</strong> özelliğini ürettim.<br>
+            3. <strong>İşlemler Arası Geçen Süre (<code>delta_time_sec</code>):</strong> PySpark <code>lag</code> fonksiyonu ile müşterinin bir önceki işlemiyle mevcut işlemi arasında geçen saniye farkını çıkardım.</p>
+            <p>Son aşamada PySpark <code>VectorAssembler</code> ve <code>StandardScaler</code> kullanarak toplam özellik sayımızı 30'dan <strong>37 zengin özelliğe</strong> çıkardım. Şimdi sözü modelleme ve metrik analizi için 4. arkadaşımıza bırakıyorum."</p>
+        </div>
+    </div>
+
+    <div class="section-card qa">
+        <div class="section-title">🛡️ 3. HOCA SORARSA ŞOV YAPACAĞIN CEVAPLAR</div>
+        <div class="qa-item">
+            <div class="qa-q">Soru: "Müşteri ortalamasını hesaplarken gelecekteki işlemleri de ortalamaya kattınız mı?"</div>
+            <div class="qa-a">Cevap: "Hayır hocam! Tüm zamanların ortalamasını alsaydık geleceğe ait bilgiyi bugüne sızdırmış olurduk (Look-ahead bias). Biz <code>rowsBetween(Window.unboundedPreceding, 0)</code> kullanarak sadece o işlem anına kadar gerçekleşmiş geçmiş işlemlerin kümülatif ortalamasını aldık."</div>
+        </div>
+    </div>
+
+    <!-- ======================= SAYFA 5: ÖĞRENCİ 4 ======================= -->
+    <div class="page-break"></div>
+    <div class="student-header">
+        <div>
+            <h2>ÖĞRENCİ 4: Sınıflandırma Modelleri &amp; Kapsamlı Metrik Analizi</h2>
+            <div class="task-desc">Görev: Fraud sınıflandırma modeli geliştirir; accuracy yerine precision, recall, F1, AUPRC inceler.</div>
+        </div>
+        <div class="badge-file">src/modeling.py</div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Model Adı</th>
+                <th>Accuracy (Doğruluk)</th>
+                <th>Precision (Kesinlik)</th>
+                <th>Recall (Yakalama)</th>
+                <th>F1-Score</th>
+                <th>F2-Score</th>
+                <th>ROC-AUC</th>
+                <th>PR-AUC (AUPRC)</th>
+                <th>Yakalanan Fraud (TP)</th>
+                <th>Kaçırılan Fraud (FN)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Naive Majority (Her Şeye 0 De)</strong></td>
+                <td style="color:#dc2626; font-weight:700;">%99.833 (Aldatıcı!)</td>
+                <td>0.0000</td>
+                <td style="color:#dc2626; font-weight:700;">%0.0 (Fiyasko!)</td>
+                <td>0.0000</td>
+                <td>0.0000</td>
+                <td>0.5000</td>
+                <td>0.0017</td>
+                <td>0 / 10</td>
+                <td style="color:#dc2626; font-weight:700;">10 (Hepsi Kaçtı!)</td>
+            </tr>
+            <tr>
+                <td><strong>LightGBM Classifier</strong></td>
+                <td>%99.867</td>
+                <td>0.5625</td>
+                <td style="color:#16a34a; font-weight:700;">%90.0</td>
+                <td>0.6923</td>
+                <td>0.8036</td>
+                <td>0.9494</td>
+                <td>0.5064</td>
+                <td>9 / 10</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td><strong>XGBoost Classifier</strong></td>
+                <td>%99.983</td>
+                <td style="color:#16a34a; font-weight:700;">0.9091</td>
+                <td style="color:#16a34a; font-weight:700;">%100.0</td>
+                <td style="color:#16a34a; font-weight:700;">0.9524</td>
+                <td style="color:#16a34a; font-weight:700;">0.9804</td>
+                <td>1.0000</td>
+                <td style="color:#2563eb; font-weight:700;">1.0000</td>
+                <td>10 / 10</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td><strong>Random Forest (Balanced)</strong></td>
+                <td>%100.00</td>
+                <td>1.0000</td>
+                <td style="color:#16a34a; font-weight:700;">%100.0</td>
+                <td>1.0000</td>
+                <td>1.0000</td>
+                <td>1.0000</td>
+                <td style="color:#2563eb; font-weight:700;">1.0000</td>
+                <td>10 / 10</td>
+                <td>0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="img-grid">
+        <div class="img-box">
+            <img src="figures/04_confusion_matrices.png" alt="Confusion Matrices">
+            <div class="img-caption">Grafik 3: Modellerin Karmaşıklık Matrisleri (Confusion Matrices)</div>
+        </div>
+        <div class="img-box">
+            <img src="figures/05_pr_and_roc_curves.png" alt="PR ve ROC Eğrileri">
+            <div class="img-caption">Grafik 4: Precision-Recall (AUPRC) vs ROC Eğrisi Karşılaştırması</div>
+        </div>
+    </div>
+
+    <div class="section-card learn">
+        <div class="section-title">📚 1. ÖNCE SEN ÖĞREN (Ne Yaptın ve Mantığı Nedir?)</div>
+        <ul class="clean-list">
+            <li><strong>Accuracy Paradox (Doğruluk Paradoksu):</strong> Test setimizde 6.000 işlem var (5.990 Normal, 10 Fraud). Hiçbir şey öğrenmeyip gelen her işleme "Normal (0)" diyen kukla <code>Naive Model</code>, 6.000 işlemin 5.990'ını doğru bildiği için <strong>%99.83 Accuracy</strong> alır! Ama yakaladığı dolandırıcı sayısı <strong>0 (Sıfır)</strong>'dır! İşte doğruluğun %99.8 çıkıp modelin tamamen kör olmasına <em>Accuracy Paradox</em> denir.</li>
+            <li><strong>Neden ROC-AUC Değil de AUPRC (PR-AUC)?</strong> ROC eğrisindeki False Positive Rate ($FPR = FP / (FP + TN)$) formülünün paydasında $TN$ (5.990 Normal işlem) vardır. Payda çok büyük olduğu için çok sayıda yanlış alarm verilse bile ROC-AUC %95+ görünür. <strong>AUPRC</strong> ise $TN$'yi denkleme hiç katmaz; sadece Precision ve Recall'a odaklanır. Dengesiz veride tek dürüst metrik AUPRC'dir!</li>
+        </ul>
+    </div>
+
+    <div class="section-card speech">
+        <div class="section-title">🎤 2. SUNUMDA BİREBİR KONUŞMA METNİ (Sıra Sana Geldiğinde Böyle Anlat)</div>
+        <div class="speech-text">
+            <p>"Teşekkürler. İlk üç arkadaşımın hazırladığı, dengelediği ve PySpark davranış özellikleriyle zenginleştirdiği veri üzerinde <strong>Fraud Sınıflandırma Modellerini Geliştirmek ve Accuracy Yerine Precision, Recall, F1 ve AUPRC Ölçütlerini İncelemek</strong> benim görevimdi (<code>src/modeling.py</code>).</p>
+            <p>Bu kapsamda <strong>Random Forest, LightGBM ve XGBoost</strong> algoritmalarını eğittim. Ayrıca Accuracy metriğinin bu problemdeki anlamsızlığını kanıtlamak için her işleme 'Normal' diyen bir <strong>Naive Majority</strong> taban modeli kurdum.</p>
+            <p><em>(Tabloyu ve Grafik 3'ü göstererek)</em> Hocam, tablomuzun ilk satırı <strong>Accuracy Paradox (Doğruluk Paradoksu)</strong> kavramını çarpıcı biçimde kanıtlamaktadır: Hiçbir öğrenme yapmayan Naive model, test setindeki 6.000 işlemin tamamına 'Normal' diyerek <strong>%99.83 Accuracy</strong> elde etmiştir. Ancak Confusion Matrix'e baktığımızda test setindeki <strong>10 dolandırıcılığın 0 tanesini yakalamış, tamamını kaçırmıştır (Recall = %0.0)</strong>.</p>
+            <p>Bu nedenle Accuracy yerine 4 kritik ölçüte odaklandık: <strong>Recall</strong> (dolandırıcıları kaçırmama oranımız), <strong>Precision</strong> (verdiğimiz alarmların doğruluk oranı), <strong>F1/F2-Score</strong> ve en önemlisi <strong>AUPRC (Precision-Recall Eğrisi Alanı)</strong>. <em>(Grafik 4'ü göstererek)</em> Sağdaki ROC eğrisi, devasa True Negative sayısı yüzünden aşırı iyimser bir tablo çizerken, soldaki AUPRC eğrisi modellerin gerçek ayrıştırma gücünü göstermektedir. <strong>XGBoost (%100 Recall, %90.9 Precision)</strong> ve <strong>Random Forest</strong> modellerimiz testteki 10 dolandırıcılığın tamamını yakalamayı başarmıştır. Şimdi sözü ölçek deneyleri ve araştırma sorumuzun yanıtı için 5. arkadaşımıza bırakıyorum."</p>
+        </div>
+    </div>
+
+    <div class="section-card qa">
+        <div class="section-title">🛡️ 3. HOCA SORARSA ŞOV YAPACAĞIN CEVAPLAR</div>
+        <div class="qa-item">
+            <div class="qa-q">Soru: "Bankacılıkta Precision mı daha kritiktir Recall mu?"</div>
+            <div class="qa-a">Cevap: "Hocam, finansal açıdan <strong>Recall</strong> daha kritiktir; çünkü kaçırılan bir fraud (False Negative) binlerce dolarlık doğrudan para kaybıdır. Yanlış alarmın (False Positive) maliyeti ise müşteriye giden bir doğrulama SMS'idir. Bu yüzden Recall'a 2 kat ağırlık veren F2-Score'u da raporladık."</div>
+        </div>
+    </div>
+
+    <!-- ======================= SAYFA 6: ÖĞRENCİ 5 ======================= -->
+    <div class="page-break"></div>
+    <div class="student-header">
+        <div>
+            <h2>ÖĞRENCİ 5: Ölçek ve Dengesizlik Etki Analizi (Araştırma Sorusu)</h2>
+            <div class="task-desc">Görev: Veri büyüklüğü ve sınıf dengesizliğinin eğitim süresi ve model performansına etkisini analiz eder.</div>
+        </div>
+        <div class="badge-file">src/experiments.py</div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Veri Ölçeği (%)</th>
+                <th>Eğitim İşlem Sayısı</th>
+                <th>Eğitimdeki Normal Sayısı</th>
+                <th>Eğitimdeki Fraud Sayısı</th>
+                <th>Eğitim Süresi (Latency)</th>
+                <th>Çıkarım Süresi (Inference)</th>
+                <th>Test Recall (Yakalama)</th>
+                <th>Test PR-AUC (AUPRC)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>%10 Ölçek</strong></td>
+                <td>2,400</td>
+                <td>2,396</td>
+                <td style="color:#dc2626; font-weight:700;">Sadece 4 Adet</td>
+                <td>1.29 sn</td>
+                <td>45.39 ms</td>
+                <td style="color:#d97706; font-weight:700;">%60.0 (Yetersiz)</td>
+                <td>0.8947</td>
+            </tr>
+            <tr>
+                <td><strong>%30 Ölçek</strong></td>
+                <td>7,200</td>
+                <td>7,188</td>
+                <td>12 Adet</td>
+                <td>1.26 sn</td>
+                <td>55.41 ms</td>
+                <td style="color:#d97706; font-weight:700;">%60.0 (Yetersiz)</td>
+                <td>0.0081</td>
+            </tr>
+            <tr>
+                <td><strong>%60 Ölçek (Optimum Eşik)</strong></td>
+                <td>14,400</td>
+                <td>14,375</td>
+                <td style="color:#16a34a; font-weight:700;">25 Adet</td>
+                <td style="color:#16a34a; font-weight:700;">0.58 sn (En Hızlı)</td>
+                <td>29.20 ms</td>
+                <td style="color:#16a34a; font-weight:700;">%100.0 (Zirve!)</td>
+                <td style="color:#2563eb; font-weight:700;">0.5556</td>
+            </tr>
+            <tr>
+                <td><strong>%100 Ölçek (Tam Veri)</strong></td>
+                <td>24,000</td>
+                <td>23,959</td>
+                <td>41 Adet</td>
+                <td style="color:#dc2626; font-weight:700;">2.33 sn (4x Maliyet)</td>
+                <td>53.64 ms</td>
+                <td>%90.0 (Plato)</td>
+                <td>0.5064 (Doyum)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="img-grid-single">
+        <div class="img-box wide">
+            <img src="figures/06_scale_experiment_results.png" alt="Ölçek Deneyi Grafiği">
+            <div class="img-caption">Grafik 5: (Sol) Veri Ölçeği vs AUPRC &amp; Recall | (Orta) Veri Ölçeği vs Eğitim Süresi | (Sağ) Süre vs AUPRC Trade-Off</div>
+        </div>
+    </div>
+
+    <div class="section-card learn">
+        <div class="section-title">📚 1. ÖNCE SEN ÖĞREN (Araştırma Sorusunun Bilimsel Yanıtı Nedir?)</div>
+        <ul class="clean-list">
+            <li><strong>Araştırma Sorusu:</strong> <em>"Çok veri olması, nadir fraud olaylarını bulmayı gerçekten kolaylaştırıyor mu?"</em></li>
+            <li><strong>Cevap: KISMEN EVET, ANCAK BELİRLİ BİR EŞİKTEN SONRA DOYUMA ULAŞIR (Diminishing Returns)!</strong></li>
+            <li><strong>Neden? (3 Maddelik Kanıt):</strong>
+                <br>1. <strong>Kritik Azınlık Eşiği (%10 &rarr; %60):</strong> Çok küçük veride (%10-%30) modelin önünde sadece 4 ila 12 adet fraud örneği vardır; model kuralları genelleştiremez ve Recall %60'ta kalır. Veri %60'a (25 fraud örneğine) çıktığında model örüntüyü kavrar ve <strong>Recall %100'e sıçrar!</strong>
+                <br>2. <strong>Dengesizlik ve Gürültü Baskısı:</strong> Veri hacmini artırmak 1:587 olan dengesizlik oranını değiştirmez! Sisteme giren her 1 yeni fraud yanında 587 yeni normal işlem girer. Bu devasa normal işlem havuzu sınır bölgelerde yanlış alarmları (False Positives) artırarak Precision'ı baskılar.
+                <br>3. <strong>Süre vs Performans Doyumu (%60 &rarr; %100):</strong> %60'tan %100 veriye çıkıldığında eğitim süresi <strong>0.58 saniyeden 2.33 saniyeye (4 katına)</strong> fırlarken, AUPRC ve Recall artmamakta, plato yapmaktadır.
+            </li>
+        </ul>
+    </div>
+
+    <div class="section-card speech">
+        <div class="section-title">🎤 2. SUNUMDA BİREBİR KONUŞMA METNİ (Sıra Sana Geldiğinde Böyle Anlat)</div>
+        <div class="speech-text">
+            <p>"Teşekkürler. Projemizin son aşamasında, çalışmamızın ana araştırma sorusunu yanıtlamak üzere <strong>Veri Büyüklüğü ve Sınıf Dengesizliğinin Eğitim Süresi ve Model Performansına Etkisini</strong> analiz ettim (<code>src/experiments.py</code>).</p>
+            <p>Araştırma sorumuz şuydu: <strong>'Çok veri olması, nadir fraud olaylarını bulmayı gerçekten kolaylaştırıyor mu?'</strong></p>
+            <p>Bunu test etmek için eğitim verimizi 1'e 587 dengesizlik oranını koruyarak <strong>%10, %30, %60 ve %100</strong> olmak üzere 4 farklı ölçekte eğittim; her ölçekte <strong>Eğitim Süresini (Training Time)</strong> ve <strong>Model Performansını (AUPRC ve Recall)</strong> ölçtüm.</p>
+            <p><em>(Tabloyu ve Grafik 5'i göstererek)</em> Deney sonuçlarımız bize çok net bir mühendislik yanıtı vermektedir:<br>
+            <strong>Araştırma sorumuzun yanıtı: KISMEN EVET, ANCAK BELİRLİ BİR EŞİKTEN SONRA DOYUMA ULAŞMAKTADIR (Diminishing Returns)!</strong></p>
+            <p>1. <strong>Kritik Azınlık Hacmi (%10 &rarr; %60):</strong> Tabloda görüldüğü gibi %10 ve %30 ölçeğinde model sadece 4 ila 12 adet fraud görmektedir; bu yetersiz kaldığı için Recall %60'ta kalır. Ancak veri %60 boyutuna (25 fraud işlemine) ulaştığında model örüntüyü yakalamakta ve <strong>Recall %100'e</strong> sıçramaktadır.<br>
+            2. <strong>False Positive Gürültü Baskısı:</strong> Veri büyüklüğünü artırmak 1:587 olan dengesizlik oranını değiştirmez. Sisteme eklenen her 1 fraud işlemine karşılık 587 yeni normal işlem gelmektedir. Bu devasa normal işlem havuzu yanlış alarmları tetikleyerek AUPRC artışını sınırlar.<br>
+            3. <strong>Eğitim Süresi vs Performans Trade-off'u:</strong> %60 ölçeğinden %100 ölçeğine geçildiğinde eğitim süresi <strong>4 katına (0.58 sn'den 2.33 sn'ye)</strong> çıkarken, model başarımı plato yapmaktadır.</p>
+            <p><strong>Genel Sonuç olarak hocam;</strong> nadir dolandırıcılık tespitinde sadece 'daha fazla ham veri biriktirmek' tek başına işi kolaylaştırmaz, yalnızca hesaplama maliyetini katlar. Asıl başarı; <strong>PySpark ile davranışsal özellikler üretmekten (Öğrenci 3), doğru sınıf dengeleme yapmaktan (Öğrenci 2) ve AUPRC odaklı model kurmaktan (Öğrenci 4)</strong> geçmektedir. Bizi dinlediğiniz için teşekkür ederiz."</p>
+        </div>
+    </div>
+
+    <div class="section-card qa">
+        <div class="section-title">🛡️ 3. HOCA SORARSA ŞOV YAPACAĞIN CEVAPLAR</div>
+        <div class="qa-item">
+            <div class="qa-q">Soru: "O halde bankalara çok veri toplamasınlar mı diyorsunuz?"</div>
+            <div class="qa-a">Cevap: "Hayır hocam; %10'dan %60'a çıkarken gördüğümüz gibi modelin nadir fraud paternlerini öğrenebilmesi için minimum bir kritik veri eşiğine kesinlikle ihtiyacı var. Ancak bu eşik aşıldıktan sonra yılların milyarlarca ham normal işlemini modele yığmak yerine, yakın geçmişteki optimal veri penceresi üzerinde PySpark ile davranış özellikleri (Feature Engineering) üretmek çok daha yüksek başarı ve hız sağlar."</div>
+        </div>
+    </div>
+
+</body>
+</html>
