@@ -26,11 +26,13 @@ if hasattr(sys.stdout, "reconfigure"):
 
 def find_available_port(start_port=8080):
     port = start_port
-    while port < 9000:
+    while port < 8150:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            if s.connect_ex(('localhost', port)) != 0:
+            try:
+                s.bind(("127.0.0.1", port))
                 return port
-            port += 1
+            except OSError:
+                port += 1
     return 8080
 
 
@@ -95,22 +97,26 @@ def start_server():
 
     port = find_available_port(8080)
 
-    print("\n" + "="*80)
-    print("PROJE 4: KREDI KARTI DOLANDIRICILIK ANALIZI - CANLI SUNUM PORTALI")
-    print("="*80)
-    print(f"Sunucu Adresi: http://localhost:{port}/index.html")
-    print("Web arayuzu ve Canli API devrede...")
-    print("Durdurmak icin terminalde Ctrl+C tuslarina basabilirsiniz.\n")
-
-    webbrowser.open(f"http://localhost:{port}/index.html")
-
     server_cls = getattr(http.server, "ThreadingHTTPServer", http.server.HTTPServer)
     server_cls.allow_reuse_address = True
-    with server_cls(("", port), LivePresentationHandler) as httpd:
+    with server_cls(("127.0.0.1", port), LivePresentationHandler) as httpd:
+        url = f"http://localhost:{port}/index.html"
+        print("\n" + "="*80, flush=True)
+        print("PROJE 4: KREDI KARTI DOLANDIRICILIK ANALIZI - CANLI SUNUM PORTALI", flush=True)
+        print("="*80, flush=True)
+        print(f"Sunucu Adresi: {url}", flush=True)
+        print("Web arayuzu ve Canli API devrede...", flush=True)
+        print("Durdurmak icin terminalde Ctrl+C tuslarina basabilirsiniz.\n", flush=True)
+
+        try:
+            webbrowser.open(url)
+        except Exception:
+            pass
+
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\nSunucu guvenle kapatildi. Iyi sunumlar!")
+            print("\nSunucu guvenle kapatildi. Iyi sunumlar!", flush=True)
 
 
 if __name__ == "__main__":
