@@ -773,12 +773,12 @@
         <section id="page-0" class="page-section active">
             <div class="hero-banner">
                 <div class="hero-text">
-                    <h2>Öğrenci 1: Veri Hazırlığı ve Keşifsel Veri Analizi (EDA)</h2>
-                    <p>Kaggle formatındaki kredi kartı dolandırıcılık veri setinin yapısı, sınıf dengesizliğinin boyutu ve işlem hacmi istatistikleri.</p>
+                    <h2>Öğrenci 1: İşlem Veri Setini Hazırlar ve Veri Dağılımını İnceler</h2>
+                    <p><strong>Problem:</strong> Çok büyük işlem verisinde az sayıdaki fraud işleminin tespiti. | Kaggle formatındaki işlem verisinin hazırlanması, sınıf dağılımı (1:587) ve Time/Amount analizi.</p>
                 </div>
                 <div class="student-pill">
                     <i class="fa-solid fa-user-graduate"></i>
-                    <span>Sorumlu: ÖĞRENCİ 1 (src/data_prep.py)</span>
+                    <span>ÖĞRENCİ 1 (src/data_prep.py)</span>
                 </div>
             </div>
 
@@ -859,12 +859,12 @@
         <section id="page-1" class="page-section">
             <div class="hero-banner">
                 <div class="hero-text">
-                    <h2>Öğrenci 2: Sınıf Dengesizliği Çözümleri & Veri Sızıntısı Koruması</h2>
-                    <p>Uç dengesizlik oranını çözmek için Random Undersampling, SMOTE ve Algoritmik Ağırlıklandırma. Data Leakage Guard mimarisi.</p>
+                    <h2>Öğrenci 2: Class Imbalance Problemini Analiz Eder ve Uygun Dengeleme Yaklaşımını Uygular</h2>
+                    <p>Aşırı sınıf dengesizliği (1:587) analizi; Random Undersampling, SMOTE ve Algoritmik Ağırlıklandırma (scale_pos_weight) ile Data Leakage Guard mimarisi.</p>
                 </div>
                 <div class="student-pill">
                     <i class="fa-solid fa-user-graduate"></i>
-                    <span>Sorumlu: ÖĞRENCİ 2 (src/imbalance.py)</span>
+                    <span>ÖĞRENCİ 2 (src/imbalance.py)</span>
                 </div>
             </div>
 
@@ -946,12 +946,12 @@ scale_pos_weight = get_scale_pos_weight(y_train)  # 584.37
         <section id="page-2" class="page-section">
             <div class="hero-banner">
                 <div class="hero-text">
-                    <h2>Öğrenci 3: PySpark ile Davranışsal Özellik Mühendisliği</h2>
-                    <p>PySpark Window fonksiyonları ile müşteri ve zaman ekseninde kayan pencereler (Rolling Windows) ve anomali özellikleri.</p>
+                    <h2>Öğrenci 3: Spark Üzerinde Müşteri ve Zaman Bazlı Davranış Özellikleri Üretir</h2>
+                    <p>PySpark Window fonksiyonları ile son 1, 6, 24 saatlik işlem sıklıkları (Rolling Windows), müşteri ortalama harcama sapması (Z-Score) ve işlemler arası süre (Delta Time).</p>
                 </div>
                 <div class="student-pill">
                     <i class="fa-solid fa-user-graduate"></i>
-                    <span>Sorumlu: ÖĞRENCİ 3 (src/spark_features.py)</span>
+                    <span>ÖĞRENCİ 3 (src/spark_features.py)</span>
                 </div>
             </div>
 
@@ -1036,12 +1036,12 @@ df = df.withColumn("delta_time_sec", F.col("Time_sec") - F.lag("Time_sec", 1).ov
         <section id="page-3" class="page-section">
             <div class="hero-banner">
                 <div class="hero-text">
-                    <h2>Öğrenci 4: Makine Öğrenimi Modelleri & Accuracy Paradox</h2>
-                    <p>LightGBM, XGBoost, Random Forest ve Naive Baseline modellerinin karşılaştırması. Doğruluk Paradoksunun sayısal ispatı.</p>
+                    <h2>Öğrenci 4: Fraud Sınıflandırma Modeli Geliştirir; Accuracy Yerine Precision, Recall, F1, AUPRC İnceler</h2>
+                    <p>LightGBM, XGBoost ve Random Forest modelleri; Doğruluk Paradoksu (Accuracy Paradox) ispatı ve neden ROC-AUC yerine AUPRC (PR-AUC) kullanıldığının analizi.</p>
                 </div>
                 <div class="student-pill">
                     <i class="fa-solid fa-user-graduate"></i>
-                    <span>Sorumlu: ÖĞRENCİ 4 (src/modeling.py)</span>
+                    <span>ÖĞRENCİ 4 (src/modeling.py)</span>
                 </div>
             </div>
 
@@ -1121,12 +1121,12 @@ df = df.withColumn("delta_time_sec", F.col("Time_sec") - F.lag("Time_sec", 1).ov
         <section id="page-4" class="page-section">
             <div class="hero-banner">
                 <div class="hero-text">
-                    <h2>Öğrenci 5: Veri Ölçeği Simülasyonu & Araştırma Sorusunun Yanıtı</h2>
-                    <p>Projenin temel araştırma sorusuna ampirik yanıt: Farklı veri büyüklüklerinde (%10, %30, %60, %100) eğitim süresi vs başarım analizi.</p>
+                    <h2>Öğrenci 5: Veri Büyüklüğü ve Sınıf Dengesizliğinin Eğitim Süresi ve Model Performansına Etkisini Analiz Eder</h2>
+                    <p><strong>Araştırma Sorusu:</strong> "Çok veri olması, nadir fraud olaylarını bulmayı gerçekten kolaylaştırıyor mu?" | %10, %30, %60 ve %100 veri ölçeklerinde gecikme (latency) vs AUPRC doyum analizi.</p>
                 </div>
                 <div class="student-pill">
                     <i class="fa-solid fa-user-graduate"></i>
-                    <span>Sorumlu: ÖĞRENCİ 5 (src/experiments.py)</span>
+                    <span>ÖĞRENCİ 5 (src/experiments.py)</span>
                 </div>
             </div>
 
