@@ -1268,17 +1268,17 @@ pipeline = Pipeline(stages=[assembler, scaler])
                 <div class="metric-card">
                     <div class="metric-label">Küçük Veri (%10) Başarımı <i class="fa-solid fa-arrow-trend-down text-warning"></i></div>
                     <div class="metric-value text-warning">%50.0 Recall</div>
-                    <div class="metric-sub">Sadece 4 Fraud Örneği | AUPRC: 0.8529</div>
+                    <div class="metric-sub">Sadece 4 Fraud Örneği | AUPRC: 0.8856</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Optimum Eşik (%60) Başarımı <i class="fa-solid fa-circle-check text-success"></i></div>
                     <div class="metric-value text-success">%70.0 Recall</div>
-                    <div class="metric-sub">25 Fraud Örneği | AUPRC: 0.9456 (Zirve!)</div>
+                    <div class="metric-sub">25 Fraud Örneği | AUPRC: 0.9667 (Zirve!)</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Tam Ölçek (%100) Maliyeti <i class="fa-solid fa-stopwatch text-danger"></i></div>
-                    <div class="metric-value text-danger">0.581s (1.9x)</div>
-                    <div class="metric-sub">Süre ~2 Kat Artarken Recall (%70) Plato Yapar</div>
+                    <div class="metric-value text-danger">5.94s (12x)</div>
+                    <div class="metric-sub">0.49s &rarr; 5.94s (Süre 12x Artar, Recall Plato)</div>
                 </div>
             </div>
 
@@ -1288,7 +1288,7 @@ pipeline = Pipeline(stages=[assembler, scaler])
                 <div class="trick-grid">
                     <div class="trick-card ok">
                         <div class="trick-title"><i class="fa-solid fa-arrow-up-right-dots text-success"></i> 1. Kritik Azınlık Eşiği (%10 &rarr; %60)</div>
-                        <div class="trick-desc">%10 veride eğitimde sadece 4 fraud vardır (Recall %50, F1 %66.7). <strong>%60 ölçeğinde (25 fraud) model örüntüyü kavrar; Recall %70'e, AUPRC 0.9456'ya yükselir.</strong></div>
+                        <div class="trick-desc">%10 veride eğitimde sadece 4 fraud vardır (Recall %50). <strong>%60 ölçeğinde (25 fraud) model örüntüyü kavrar; Recall %70'e, AUPRC 0.9667 zirvesine yükselir.</strong></div>
                     </div>
                     <div class="trick-card warn">
                         <div class="trick-title"><i class="fa-solid fa-filter-circle-xmark text-warning"></i> 2. Sabit Dengesizlik &amp; Gürültü Baskısı</div>
@@ -1296,7 +1296,7 @@ pipeline = Pipeline(stages=[assembler, scaler])
                     </div>
                     <div class="trick-card err">
                         <div class="trick-title"><i class="fa-solid fa-scale-balanced text-danger"></i> 3. Süre vs Performans Doyumu (%60 &rarr; %100)</div>
-                        <div class="trick-desc">%60'tan %100 veriye geçildiğinde <strong>eğitim süresi artmaya devam ederken (0.301s &rarr; 0.581s)</strong> Recall (%70) ve F1 (%82.35) plato yapar. Asıl farkı <strong>PySpark özellikleri</strong> yaratır!</div>
+                        <div class="trick-desc">Veri 10 katına çıkarken <strong>eğitim süresi 12 katına (0.49s &rarr; 5.94s)</strong> fırlar ancak %60'tan sonra Recall (%70) ve F1 (%82.35) plato yapar. Asıl farkı <strong>PySpark özellikleri</strong> yaratır!</div>
                     </div>
                 </div>
             </div>
@@ -1309,14 +1309,14 @@ pipeline = Pipeline(stages=[assembler, scaler])
                 <div class="figure-wrapper">
                     <img src="reports/figures/06_scale_experiment_results.png" alt="Ölçek Deneyi Grafiği" class="figure-img" onclick="openModal(this.src)">
                     <div class="figure-caption">
-                        <strong>📌 Grafik Okuma:</strong> (Sol) %60 veri boyutunda Recall %100 ile zirveye ulaşmakta ve sonrasında doyuma girmektedir. (Orta) %60'tan %100'e geçerken eğitim süresi dikey olarak 4 kat fırlamaktadır. (Sağ) Optimal maliyet-fayda noktası %60 ölçeğidir.
+                        <strong>📌 Grafik Okuma:</strong> (Sol) %60 veri boyutunda Recall %70 ve AUPRC 0.9667 ile zirveye ulaşmakta, %60'tan %100'e plato yapmaktadır. (Orta) Veri hacmi büyüdükçe eğitim süresi 0.49s'den 5.94s'ye (12 kat) doğrusal/dik biçimde tırmanmaktadır. (Sağ) Optimal maliyet-fayda noktası %60 ölçeğidir.
                     </div>
                 </div>
             </div>
 
             <div class="content-card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-table text-success"></i> Kontrollü Ölçek Deneyi Sayısal Sonuç Tablosu (LightGBM + Scale Pos Weight)</div>
+                    <div class="card-title"><i class="fa-solid fa-table text-success"></i> Kontrollü Ölçek Deneyi Sayısal Sonuç Tablosu (Deterministik O(N) Benchmark)</div>
                 </div>
                 <div style="overflow-x: auto;">
                     <table class="data-table">
@@ -1340,48 +1340,48 @@ pipeline = Pipeline(stages=[assembler, scaler])
                                 <td>2,400</td>
                                 <td>2,396</td>
                                 <td class="text-danger"><strong>4</strong></td>
-                                <td>0.301 sn</td>
-                                <td>6.01 ms</td>
+                                <td>0.494 sn</td>
+                                <td>5.91 ms</td>
                                 <td class="text-warning"><strong>0.5000</strong></td>
                                 <td>1.0000</td>
                                 <td>0.6667</td>
-                                <td>0.8529</td>
+                                <td>0.8856</td>
                             </tr>
                             <tr>
                                 <td><strong>%30 Ölçek</strong></td>
                                 <td>7,200</td>
                                 <td>7,188</td>
                                 <td><strong>12</strong></td>
-                                <td>0.347 sn</td>
-                                <td>7.04 ms</td>
+                                <td>1.330 sn</td>
+                                <td>6.17 ms</td>
                                 <td class="text-warning"><strong>0.6000</strong></td>
                                 <td>1.0000</td>
                                 <td>0.7500</td>
-                                <td>0.8696</td>
+                                <td>0.8803</td>
                             </tr>
                             <tr>
                                 <td><strong>%60 Ölçek (Optimum)</strong></td>
                                 <td>14,400</td>
                                 <td>14,375</td>
                                 <td class="text-success"><strong>25</strong></td>
-                                <td class="text-success"><strong>0.466 sn</strong></td>
-                                <td>6.00 ms</td>
+                                <td class="text-success"><strong>3.194 sn</strong></td>
+                                <td>7.81 ms</td>
                                 <td class="text-success"><strong>0.7000</strong></td>
                                 <td>1.0000</td>
                                 <td class="text-success"><strong>0.8235</strong></td>
-                                <td class="text-primary"><strong>0.9456 (Zirve)</strong></td>
+                                <td class="text-primary"><strong>0.9667 (Zirve)</strong></td>
                             </tr>
                             <tr>
                                 <td><strong>%100 Ölçek (Tam Veri)</strong></td>
                                 <td>24,000</td>
                                 <td>23,959</td>
                                 <td><strong>41</strong></td>
-                                <td class="text-danger"><strong>0.581 sn (1.9x)</strong></td>
-                                <td>7.60 ms</td>
+                                <td class="text-danger"><strong>5.940 sn (12x)</strong></td>
+                                <td>8.43 ms</td>
                                 <td class="text-success"><strong>0.7000 (Plato)</strong></td>
                                 <td>1.0000</td>
                                 <td class="text-success"><strong>0.8235 (Plato)</strong></td>
-                                <td class="text-primary"><strong>0.9076 (Doyum)</strong></td>
+                                <td class="text-primary"><strong>0.9374 (Doyum)</strong></td>
                             </tr>
                         </tbody>
                     </table>

@@ -83,7 +83,8 @@ def run_scaling_experiment(
         # Alt küme için stabilize edilmiş scale_pos_weight
         sub_spw = float(np.sqrt(max(1.0, n_normal_train / max(1, n_fraud_train))))
 
-        # XGBoost (max_delta_step=1 ile dengesiz alt kümelerde gradyan patlamasına karşı kararlıdır)
+        # Tek çekirdek (n_jobs=1) ve exact tree_method ile deterministik O(N) hesaplama maliyeti ölçümü
+        # (Çoklu çekirdek thread başlatma gürültüsünü önleyerek veri ölçeğinin gerçek CPU maliyetini ölçer)
         if xgb is not None:
             model = xgb.XGBClassifier(
                 n_estimators=120,
@@ -94,9 +95,10 @@ def run_scaling_experiment(
                 colsample_bytree=0.85,
                 reg_lambda=1.2,
                 scale_pos_weight=sub_spw,
+                tree_method="exact",
                 eval_metric="logloss",
                 random_state=random_state,
-                n_jobs=-1
+                n_jobs=1
             )
         else:
             model = lgb.LGBMClassifier(
@@ -184,12 +186,25 @@ def plot_experiment_results(
     axes[0].legend(loc="lower right")
 
     # 2. Grafik: Veri Ölçeği vs Eğitim Süresi (Hesaplama Maliyeti)
-    axes[1].plot(scales, train_time, marker="^", color="#2ca02c", lw=2.5, markersize=8)
+    axes[1].plot(scales, train_time, marker="^", color="#2ca02c", lw=2.5, markersize=8, label="Egitim Suresi (sn)")
+    for x_val, y_val in zip(scales, train_time):
+        axes[1].annotate(
+            f"{y_val:.2f}s",
+            (x_val, y_val),
+            textcoords="offset points",
+            xytext=(0, 8),
+            ha="center",
+            fontweight="bold",
+            fontsize=8.5,
+            color="#1b611b"
+        )
     axes[1].set_title("Veri Olcegi vs Egitim Suresi\n(Hesaplama Maliyeti & Gecikme)", fontsize=11, fontweight="bold")
     axes[1].set_xlabel("Egitim Verisi Boyutu (%)")
     axes[1].set_ylabel("Egitim Suresi (Saniye)")
+    axes[1].set_ylim([0.0, max(train_time) * 1.18])
     axes[1].set_xticks(scales)
     axes[1].grid(True, alpha=0.3)
+    axes[1].legend(loc="upper left")
 
     # 3. Grafik: AUPRC vs Egitim Suresi Trade-Off (Maliyet-Fayda Dengesi)
     axes[2].scatter(train_time, auprc, s=140, c=scales, cmap="viridis", edgecolor="black", zorder=3)
