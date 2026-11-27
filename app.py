@@ -38,9 +38,15 @@ def find_available_port(start_port=8080):
 
 class LivePresentationHandler(http.server.SimpleHTTPRequestHandler):
     """
-    Hem statik dosyaları (HTML/PNG/JS) sunar hem de canlı pipeline çalıştırma
-    isteğini (/api/run-pipeline) UTF-8 güvenliğiyle yönetir.
+    Hem statik dosyaları (HTML/PNG/JS) önbelleksiz (no-cache) sunar hem de
+    canlı pipeline çalıştırma isteğini (/api/run-pipeline) UTF-8 güvenliğiyle yönetir.
     """
+    def end_headers(self):
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.send_header('Pragma', 'no-cache')
+        self.send_header('Expires', '0')
+        super().end_headers()
+
     def do_POST(self):
         if self.path == '/api/predict-transaction':
             content_length = int(self.headers.get('Content-Length', 0))

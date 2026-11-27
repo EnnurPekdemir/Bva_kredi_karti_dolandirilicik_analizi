@@ -210,16 +210,18 @@ def plot_experiment_results(
     axes[2].scatter(train_time, auprc, s=140, c=scales, cmap="viridis", edgecolor="black", zorder=3)
     for _, row in exp_df.iterrows():
         axes[2].annotate(
-            f"%{int(row['scale_percent'])} ({row['train_time_seconds']}s, AUPRC={row['test_auprc']})",
+            f"%{int(row['scale_percent'])} ({row['train_time_seconds']:.2f}s, {row['test_auprc']:.4f})",
             (row["train_time_seconds"], row["test_auprc"]),
             textcoords="offset points",
-            xytext=(8, -6),
+            xytext=(8, -4),
             fontweight="bold",
             fontsize=8.5
         )
     axes[2].set_title("Trade-Off: Egitim Suresi vs AUPRC\n(Optimal Veri Esigi Analizi)", fontsize=11, fontweight="bold")
     axes[2].set_xlabel("Egitim Suresi (Saniye)")
     axes[2].set_ylabel("Test AUPRC")
+    axes[2].set_xlim([0.0, max(train_time) * 1.42])
+    axes[2].set_ylim([min(auprc) - 0.015, max(auprc) + 0.015])
     axes[2].grid(True, alpha=0.3)
 
     plt.tight_layout()

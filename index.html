@@ -1879,6 +1879,15 @@ Raporlar ve grafikler 'reports/' dizini altina kaydedilmistir.
             btnText.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Tekrar Çalıştır';
         }
 
+        // Initial setup and cache-bust all chart images so browser always shows latest PNGs
+        function refreshAllFigures() {
+            const stamp = Date.now();
+            document.querySelectorAll('.figure-img').forEach(img => {
+                const base = img.getAttribute('src').split('?')[0];
+                img.setAttribute('src', base + '?v=' + stamp);
+            });
+        }
+        refreshAllFigures();
         switchTab(0);
     </script>
 </body>
